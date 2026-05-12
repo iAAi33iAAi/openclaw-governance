@@ -1,0 +1,89 @@
+{
+  "app": {
+    "name": "OpenClaw 治理",
+    "tagline": "以爱为中心的主权治理"
+  },
+  "nav": {
+    "home": "首页",
+    "proposals": "提案",
+    "colony": "殖民地",
+    "agents": "代理",
+    "consensus": "共识",
+    "abundance": "丰盛",
+    "settings": "设置"
+  },
+  "loveQuality": {
+    "title": "爱的质量验证器",
+    "check": "验证",
+    "score": "爱的质量得分",
+    "threshold": "阈值",
+    "passed": "通过 - 流与爱对齐",
+    "failed": "失败 - 低于爱的质量阈值",
+    "dimensions": {
+      "flourishing": "集体繁荣",
+      "harmReduction": "减少伤害",
+      "equity": "公平与正义",
+      "regenerative": "再生影响",
+      "cooperation": "合作",
+      "beauty": "美与意义"
+    }
+  },
+  "sovereignty": {
+    "title": "主权状态",
+    "intact": "主权完整",
+    "violated": "检测到主权违规",
+    "checking": "检查主权...",
+    "actions": {
+      "validate": "验证操作",
+      "override": "覆盖（需要共识）",
+      "reject": "拒绝"
+    }
+  },
+  "colony": {
+    "title": "殖民地控制面板",
+    "agents": "活跃代理",
+    "quorum": "法定人数状态",
+    "dispatch": "调度到殖民地",
+    "agentNames": {
+      "guardian": "守护者",
+      "healer": "治愈者",
+      "builder": "建造者",
+      "keeper": "守林人",
+      "weaver": "编织者",
+      "scout": "侦察者",
+      "oracle": "神谕"
+    }
+  },
+  "consensus": {
+    "title": "12D+24D 共识",
+    "vote": "投票",
+    "result": "共识结果",
+    "dimensions": "维度",
+    "mirror": "镜像维度",
+    "quorum": "达到法定人数",
+    "pending": "等待法定人数"
+  },
+  "abundance": {
+    "title": "丰盛协议",
+    "regenerative": "再生经济",
+    "beehive": "蜂巢集成",
+    "flow": "资源流",
+    "surplus": "盈余分配"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "submit": "提交",
+    "cancel": "取消",
+    "confirm": "确认",
+    "back": "返回",
+    "next": "下一步",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "view": "查看",
+    "close": "关闭",
+    "yes": "是",
+    "no": "否"
+  }
+}

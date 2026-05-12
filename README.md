@@ -55,4 +55,25 @@ class OpenClawFlow:
                                                                         ## License
 
                                                                         MIT (c) 2026 OpenClaw Community
+
+---
+
+##  Support OpenClaw
+
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=GitHub)](https://github.com/sponsors/iAAi33iAAi)
+
+Building OpenClaw  sovereignty-first AI governance for regenerative communities. Funding supports the Colony platform: 7-agent coordination, love-quality validation, Preston/Fresco sustainable construction, and USDA VAPG beehive integration.
+
+### Sponsor Tiers
+
+| Tier | Amount | Perk |
+|------|--------|------|
+|  Community Supporter | $5/mo | Name in SUPPORTERS.md |
+|  Colony Member | $25/mo | Monthly dev updates |
+|  Steward | $100/mo | Input on governance decisions |
+|  Founding Patron | $500/mo | Direct line to origin-architect + logo in README |
+
+ [View full sponsor recognition and one-time options](SUPPORTERS.md)
+
+[**Become a Sponsor **](https://github.com/sponsors/iAAi33iAAi)
                                                                         

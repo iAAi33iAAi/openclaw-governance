@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "OpenClaw Governance",
+    "tagline": "السيادة أولاً، محبة للجميع",
+    "version": "الإصدار"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "governance": "الحوكمة",
+    "colony": "المستعمرة",
+    "consensus": "الإجماع",
+    "observatory": "المرصد",
+    "abundance": "الوفرة",
+    "settings": "الإعدادات"
+  },
+  "governance": {
+    "title": "لوحة حوكمة OpenClaw",
+    "sovereignty": "التحقق من السيادة",
+    "loveQuality": "جودة المحبة",
+    "extractionPrevention": "منع الاستخراج",
+    "humanAuthority": "سلطة الإنسان محفوظة",
+    "validate": "التحقق من الإجراء",
+    "approved": "تمت الموافقة على التدفق",
+    "blocked": "تم حظر التدفق"
+  },
+  "colony": {
+    "title": "نظام المستعمرة بـ 7 وكلاء",
+    "agents": "الوكلاء",
+    "coordinator": "المنسق",
+    "researcher": "الباحث",
+    "validator": "المحقق",
+    "executor": "المنفذ",
+    "monitor": "المراقب",
+    "communicator": "المتواصل",
+    "optimizer": "المحسّن",
+    "status": "الحالة",
+    "active": "نشط",
+    "idle": "خامل",
+    "processing": "جارٍ المعالجة"
+  },
+  "consensus": {
+    "title": "محرك الإجماع متعدد الأبعاد",
+    "dimensions": "الأبعاد",
+    "vote": "تصويت",
+    "submit": "إرسال التصويت",
+    "result": "نتيجة الإجماع",
+    "threshold": "عتبة الموافقة",
+    "participants": "المشاركون"
+  },
+  "love": {
+    "title": "محرك جودة المحبة",
+    "score": "درجة المحبة",
+    "flourishing": "الازدهار",
+    "harmReduction": "تقليل الضرر",
+    "beauty": "الجمال",
+    "dignity": "الكرامة",
+    "analyze": "تحليل"
+  },
+  "abundance": {
+    "title": "بروتوكولات الوفرة",
+    "beehive": "تكامل خلية النحل",
+    "regenerative": "الاقتصاد التجديدي",
+    "surplus": "توزيع الفائض",
+    "usda": "برنامج USDA VAPG"
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "save": "حفظ",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال"
+  }
+}

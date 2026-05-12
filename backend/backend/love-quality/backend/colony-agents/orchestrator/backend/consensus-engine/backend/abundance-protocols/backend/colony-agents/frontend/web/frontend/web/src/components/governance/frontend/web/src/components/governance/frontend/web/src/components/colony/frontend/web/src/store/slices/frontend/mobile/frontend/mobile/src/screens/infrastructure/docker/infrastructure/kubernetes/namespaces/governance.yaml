@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openclaw-governance
+    labels:
+        app.kubernetes.io/name: openclaw-governance
+            sovereignty: preserved
+                love-quality: enabled
+                    human-authority: final
+                      annotations:
+                          openclaw.io/flow-version: "1.0"
+                              openclaw.io/sovereignty-mode: strict
+                                  openclaw.io/description: "OpenClaw Governance Platform  sovereignty-first namespace"---
+                                  apiVersion: v1
+                                  kind: ResourceQuota
+                                  metadata:
+                                    name: governance-quota
+                                      namespace: openclaw-governance
+                                      spec:
+                                        hard:
+                                            requests.cpu: "4"
+                                                requests.memory: 8Gi
+                                                    limits.cpu: "8"
+                                                        limits.memory: 16Gi
+                                                            pods: "20"
+                                                                services: "10"
+                                                                    persistentvolumeclaims: "10"
+                                                                    ---
+                                                                    apiVersion: networking.k8s.io/v1
+                                                                    kind: NetworkPolicy
+                                                                    metadata:
+                                                                      name: governance-network-policy
+                                                                        namespace: openclaw-governancespec:
+                                                                          podSelector: {}
+                                                                            policyTypes:
+                                                                                - Ingress
+                                                                                    - Egress
+                                                                                      ingress:
+                                                                                          - from:
+                                                                                                  - namespaceSelector:
+                                                                                                              matchLabels:
+                                                                                                                            sovereignty: preserved
+                                                                                                                              egress:
+                                                                                                                                  - to:
+                                                                                                                                          - namespaceSelector:
+                                                                                                                                                      matchLabels:
+                                                                                                                                                                    sovereignty: preserved
+                                                                                                                                                                        - to: []
+                                                                                                                                                                              ports:
+                                                                                                                                                                                      - port: 53
+                                                                                                                                                                                                protocol: UDP

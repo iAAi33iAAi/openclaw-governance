@@ -1,0 +1,89 @@
+{
+  "app": {
+    "name": "OpenClaw Governance",
+    "tagline": "Sovereignty-first, love-centered governance"
+  },
+  "nav": {
+    "home": "Home",
+    "proposals": "Proposals",
+    "colony": "Colony",
+    "agents": "Agents",
+    "consensus": "Consensus",
+    "abundance": "Abundance",
+    "settings": "Settings"
+  },
+  "loveQuality": {
+    "title": "Love Quality Validator",
+    "check": "Validate",
+    "score": "Love Quality Score",
+    "threshold": "Threshold",
+    "passed": "Passed - flow is love-aligned",
+    "failed": "Failed - below love quality threshold",
+    "dimensions": {
+      "flourishing": "Collective Flourishing",
+      "harmReduction": "Harm Reduction",
+      "equity": "Equity & Justice",
+      "regenerative": "Regenerative Impact",
+      "cooperation": "Cooperation",
+      "beauty": "Beauty & Meaning"
+    }
+  },
+  "sovereignty": {
+    "title": "Sovereignty Status",
+    "intact": "Sovereignty Intact",
+    "violated": "Sovereignty Violation Detected",
+    "checking": "Checking sovereignty...",
+    "actions": {
+      "validate": "Validate Action",
+      "override": "Override (requires consensus)",
+      "reject": "Reject"
+    }
+  },
+  "colony": {
+    "title": "Colony Dashboard",
+    "agents": "Active Agents",
+    "quorum": "Quorum Status",
+    "dispatch": "Dispatch to Colony",
+    "agentNames": {
+      "guardian": "Guardian",
+      "healer": "Healer",
+      "builder": "Builder",
+      "keeper": "Keeper",
+      "weaver": "Weaver",
+      "scout": "Scout",
+      "oracle": "Oracle"
+    }
+  },
+  "consensus": {
+    "title": "12D+24D Consensus",
+    "vote": "Cast Vote",
+    "result": "Consensus Result",
+    "dimensions": "Dimensions",
+    "mirror": "Mirror Dimensions",
+    "quorum": "Quorum Reached",
+    "pending": "Awaiting Quorum"
+  },
+  "abundance": {
+    "title": "Abundance Protocols",
+    "regenerative": "Regenerative Economics",
+    "beehive": "Beehive Integration",
+    "flow": "Resource Flow",
+    "surplus": "Surplus Distribution"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

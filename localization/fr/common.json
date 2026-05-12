@@ -1,0 +1,89 @@
+{
+  "app": {
+    "name": "OpenClaw Gouvernance",
+    "tagline": "Gouvernance souveraine centrée sur l'amour"
+  },
+  "nav": {
+    "home": "Accueil",
+    "proposals": "Propositions",
+    "colony": "Colonie",
+    "agents": "Agents",
+    "consensus": "Consensus",
+    "abundance": "Abondance",
+    "settings": "Paramètres"
+  },
+  "loveQuality": {
+    "title": "Validateur de Qualité d'Amour",
+    "check": "Valider",
+    "score": "Score de Qualité d'Amour",
+    "threshold": "Seuil",
+    "passed": "Réussi — le flux est aligné sur l'amour",
+    "failed": "Échoué — en dessous du seuil de qualité d'amour",
+    "dimensions": {
+      "flourishing": "Épanouissement Collectif",
+      "harmReduction": "Réduction des Préjudices",
+      "equity": "Équité et Justice",
+      "regenerative": "Impact Régénératif",
+      "cooperation": "Coopération",
+      "beauty": "Beauté et Sens"
+    }
+  },
+  "sovereignty": {
+    "title": "État de Souveraineté",
+    "intact": "Souveraineté Intacte",
+    "violated": "Violation de Souveraineté Détectée",
+    "checking": "Vérification de la souveraineté...",
+    "actions": {
+      "validate": "Valider l'Action",
+      "override": "Passer outre (nécessite un consensus)",
+      "reject": "Rejeter"
+    }
+  },
+  "colony": {
+    "title": "Tableau de Bord de la Colonie",
+    "agents": "Agents Actifs",
+    "quorum": "État du Quorum",
+    "dispatch": "Envoyer à la Colonie",
+    "agentNames": {
+      "guardian": "Gardien",
+      "healer": "Guérisseur",
+      "builder": "Constructeur",
+      "keeper": "Gardien de la Mémoire",
+      "weaver": "Tisserand",
+      "scout": "Éclaireur",
+      "oracle": "Oracle"
+    }
+  },
+  "consensus": {
+    "title": "Consensus 12D+24D",
+    "vote": "Voter",
+    "result": "Résultat du Consensus",
+    "dimensions": "Dimensions",
+    "mirror": "Dimensions Miroir",
+    "quorum": "Quorum Atteint",
+    "pending": "En Attente du Quorum"
+  },
+  "abundance": {
+    "title": "Protocoles d'Abondance",
+    "regenerative": "Économie Régénérative",
+    "beehive": "Intégration Ruche",
+    "flow": "Flux de Ressources",
+    "surplus": "Distribution des Excédents"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "submit": "Soumettre",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non"
+  }
+}

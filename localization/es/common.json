@@ -1,0 +1,89 @@
+{
+  "app": {
+    "name": "OpenClaw Gobernanza",
+    "tagline": "Gobernanza soberana centrada en el amor"
+  },
+  "nav": {
+    "home": "Inicio",
+    "proposals": "Propuestas",
+    "colony": "Colonia",
+    "agents": "Agentes",
+    "consensus": "Consenso",
+    "abundance": "Abundancia",
+    "settings": "Configuracion"
+  },
+  "loveQuality": {
+    "title": "Validador de Calidad de Amor",
+    "check": "Validar",
+    "score": "Puntuacion de Calidad de Amor",
+    "threshold": "Umbral",
+    "passed": "Aprobado - el flujo esta alineado con el amor",
+    "failed": "Fallido - por debajo del umbral de calidad de amor",
+    "dimensions": {
+      "flourishing": "Florecimiento Colectivo",
+      "harmReduction": "Reduccion de Danos",
+      "equity": "Equidad y Justicia",
+      "regenerative": "Impacto Regenerativo",
+      "cooperation": "Cooperacion",
+      "beauty": "Belleza y Sentido"
+    }
+  },
+  "sovereignty": {
+    "title": "Estado de Soberania",
+    "intact": "Soberania Intacta",
+    "violated": "Violacion de Soberania Detectada",
+    "checking": "Verificando soberania...",
+    "actions": {
+      "validate": "Validar Accion",
+      "override": "Anular (requiere consenso)",
+      "reject": "Rechazar"
+    }
+  },
+  "colony": {
+    "title": "Panel de la Colonia",
+    "agents": "Agentes Activos",
+    "quorum": "Estado de Quorum",
+    "dispatch": "Enviar a la Colonia",
+    "agentNames": {
+      "guardian": "Guardian",
+      "healer": "Sanador",
+      "builder": "Constructor",
+      "keeper": "Guardabosque",
+      "weaver": "Tejedor",
+      "scout": "Explorador",
+      "oracle": "Oraculo"
+    }
+  },
+  "consensus": {
+    "title": "Consenso 12D+24D",
+    "vote": "Emitir Voto",
+    "result": "Resultado del Consenso",
+    "dimensions": "Dimensiones",
+    "mirror": "Dimensiones Espejo",
+    "quorum": "Quorum Alcanzado",
+    "pending": "Esperando Quorum"
+  },
+  "abundance": {
+    "title": "Protocolos de Abundancia",
+    "regenerative": "Economia Regenerativa",
+    "beehive": "Integracion Colmena",
+    "flow": "Flujo de Recursos",
+    "surplus": "Distribucion de Excedentes"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrio un error",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "back": "Atras",
+    "next": "Siguiente",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "close": "Cerrar",
+    "yes": "Si",
+    "no": "No"
+  }
+}

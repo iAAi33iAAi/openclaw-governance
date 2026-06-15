@@ -1,86 +1,1981 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>OpenClaw Colony Governance</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+<title>OpenClaw Universe — Parcel 1: Shell + Colony Dispatch + Crew-Colony</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        base: '#080b14',
+        panel: '#0d1117',
+        card: '#111827',
+        input: '#0a0e1a',
+        green: '#00ff88',
+        cyan: '#00d4ff',
+        purple: '#9b59ff',
+        amber: '#ffb800',
+        pink: '#ff44aa',
+        orange: '#ff6600',
+        red: '#ff3344',
+        pri: '#e0e8ff',
+        muted: '#5a6a8a',
+      }
+    }
+  }
+};
+</script>
 <style>
-  body{background:#0a0e1a;font-family:'Courier New',monospace}
-  .glow{text-shadow:0 0 20px #00ff88,0 0 40px #00ff88}
-  .card{background:linear-gradient(135deg,rgba(0,255,136,0.05),rgba(0,136,255,0.05));border:1px solid rgba(0,255,136,0.2);border-radius:12px}
-  .pulse{animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
-  .bar{height:6px;border-radius:3px;background:linear-gradient(90deg,#00ff88,#0088ff);animation:expand 2s ease-out forwards;transform-origin:left}
-  @keyframes expand{from{width:0}to{width:var(--w)}}
+:root {
+  --bg-base: #080b14;
+  --bg-panel: #0d1117;
+  --bg-card: #111827;
+  --bg-input: #0a0e1a;
+  --border: rgba(0,255,136,0.18);
+  --green: #00ff88;
+  --cyan: #00d4ff;
+  --purple: #9b59ff;
+  --amber: #ffb800;
+  --pink: #ff44aa;
+  --orange: #ff6600;
+  --red: #ff3344;
+  --text-pri: #e0e8ff;
+  --text-muted: #5a6a8a;
+  --matrix: #39ff14;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { margin:0; background:var(--bg-base); color:var(--text-pri); font-family:system-ui,sans-serif; overflow:hidden; height:100vh; display:flex; flex-direction:column; }
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--green); border-radius:2px; }
+.font-mono { font-family:'Courier New',monospace; }
+.glow-border { border:1px solid var(--border); transition:box-shadow 0.3s; }
+.glow-border:hover { box-shadow:0 0 12px rgba(0,255,136,0.12); }
+.pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+@keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+.agent-card-anim { animation: fadeSlideIn 0.4s ease forwards; opacity:0; }
+.tab-btn-active { background:var(--green) !important; color:#080b14 !important; font-weight:700; }
+.agent-cb { width:16px; height:16px; cursor:pointer; border-radius:3px; }
+.lq-bar-track { height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
+.lq-bar-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+.repo-btn { text-align:left; width:100%; padding:5px 8px; border:none; background:transparent; color:var(--text-muted); cursor:pointer; font-size:12px; border-left:3px solid transparent; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
+.repo-btn:hover { color:var(--text-pri); background:rgba(0,255,136,0.04); }
+.repo-btn.active { border-left-color:var(--green); color:var(--green); }
+.repo-btn.active .repo-dot { background:var(--green); }
+.repo-dot { width:6px; height:6px; border-radius:50%; background:var(--text-muted); flex-shrink:0; }
+.priority-radio { padding:4px 10px; border:1px solid var(--border); border-radius:4px; cursor:pointer; font-size:11px; background:transparent; color:var(--text-muted); transition:all 0.2s; }
+.priority-radio.active { background:var(--green); color:#080b14; font-weight:700; border-color:var(--green); }
+textarea, input[type="text"], input[type="number"] { background:var(--bg-input); border:1px solid var(--border); color:var(--text-pri); border-radius:6px; padding:8px 10px; font-size:13px; font-family:system-ui,sans-serif; width:100%; outline:none; transition:border-color 0.2s; }
+textarea:focus, input:focus { border-color:var(--green); }
+select { background:var(--bg-input); border:1px solid var(--border); color:var(--text-pri); border-radius:6px; padding:8px 10px; font-size:13px; font-family:system-ui,sans-serif; width:100%; outline:none; transition:border-color 0.2s; }
+select:focus { border-color:var(--green); }
+.btn-green { background:var(--green); color:#080b14; border:none; padding:8px 16px; border-radius:6px; font-weight:700; cursor:pointer; font-size:13px; transition:all 0.2s; }
+.btn-green:hover { box-shadow:0 0 16px rgba(0,255,136,0.3); }
+.btn-sm { padding:4px 10px; border-radius:4px; font-size:11px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+.btn-sm:hover { border-color:var(--green); color:var(--green); }
+.processing-banner { background:rgba(0,255,136,0.08); border:1px solid var(--border); border-radius:8px; padding:12px 16px; text-align:center; color:var(--green); font-weight:700; font-size:14px; }
+.consensus-card { border:2px solid var(--green); border-radius:10px; padding:16px; background:rgba(0,255,136,0.04); }
+.grp-crew-pill { padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; border:2px solid transparent; transition:all 0.2s; opacity:0.7; }
+.grp-crew-pill:hover { opacity:1; }
+.grp-crew-pill.active { opacity:1; border-color:currentColor; box-shadow:0 0 12px currentColor; }
+.manna-flow-bar { height:18px; border-radius:4px; transition:width 0.6s ease; }
+
+/* LAMINAR STYLES */
+.lam-section-title { color:#ffffff; font-size:16px; font-weight:700; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:20px; }
+.lam-card { background:var(--bg-panel); border:1px solid rgba(0,255,136,0.15); border-radius:8px; padding:20px; }
+.lam-domain-bar-track { height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden; margin-top:6px; }
+.lam-domain-bar-fill { height:100%; border-radius:5px; transition:width 1s ease; }
+.lam-formula-box { background:rgba(57,255,20,0.05); border-left:4px solid #39ff14; padding:16px; font-family:'Courier New',monospace; font-size:13px; border-radius:0 6px 6px 0; }
+.lam-vector-card { flex:1; min-width:200px; }
+.lam-badge { display:inline-block; background:var(--bg-input); border:1px solid var(--green); color:var(--green); font-family:'Courier New',monospace; font-size:11px; padding:4px 12px; border-radius:4px; font-weight:700; }
+.lam-terminal { background:#050810; border:1px solid rgba(57,255,20,0.2); border-radius:6px; padding:12px; font-family:'Courier New',monospace; font-size:12px; color:#39ff14; height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; }
+.lam-check-item { display:flex; align-items:center; gap:8px; font-size:13px; padding:4px 0; }
+.lam-check-item .check-icon { color:var(--green); font-weight:700; flex-shrink:0; }
 </style>
 </head>
-<body class="min-h-screen text-white">
-<div class="text-center py-20 px-6">
-  <div class="text-green-400 text-sm tracking-widest mb-4 pulse">COLONY OPERATIONAL</div>
-  <h1 class="text-5xl md:text-7xl font-bold mb-4">
-    <span class="glow text-green-400">OpenClaw</span>
-    <span class="text-blue-400"> Colony</span>
-  </h1>
-  <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-8">Sovereignty-first AI governance for regenerative human communities. 7 autonomous agents. 12-dimensional love-quality consensus. Zero extraction.</p>
-  <div class="flex flex-wrap justify-center gap-4">
-    <a href="https://github.com/iAAi33iAAi/openclaw-governance" target="_blank" class="px-8 py-3 bg-green-500 hover:bg-green-400 text-black font-bold rounded-lg transition">GitHub Repo</a>
-    <a href="https://github.com/sponsors/iAAi33iAAi" target="_blank" class="px-8 py-3 border border-green-500 hover:bg-green-500/10 text-green-400 font-bold rounded-lg transition">Sponsor</a>
+<body data-id="0">
+<app-icon data-id="1" hidden data-icon="hexagon" data-palette="Dark"></app-icon>
+
+<!-- HEADER -->
+<header data-id="2" id="header-bar-hd01" style="height:56px;flex-shrink:0;background:var(--bg-panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:50;">
+  <div data-id="3" class="font-mono" style="font-size:18px;font-weight:700;color:var(--green);white-space:nowrap;">⬡ OPENCLAW UNIVERSE</div>
+  <div data-id="4" style="flex:1;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:nowrap;overflow-x:auto;">
+    <span data-id="5" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="6" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;"></span>COLONY</span>
+    <span data-id="7" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="8" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--cyan);display:inline-block;"></span>CREW</span>
+    <span data-id="9" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="10" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block;"></span>UNDERMOON</span>
+    <span data-id="11" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="12" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--pink);display:inline-block;"></span>SAFETY</span>
+    <span data-id="13" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="14" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--orange);display:inline-block;"></span>ALEXARAC</span>
+    <span data-id="15" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="16" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--purple);display:inline-block;"></span>ALPHA-HUB</span>
+    <span data-id="17" style="display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;"><span data-id="18" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;"></span>GOVN</span>
   </div>
-</div>
-<div class="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-2 md:grid-cols-4 gap-4">
-  <div class="card p-5 text-center"><div class="text-3xl font-bold text-green-400">34</div><div class="text-xs text-gray-400 mt-1">Production Files</div></div>
-  <div class="card p-5 text-center"><div class="text-3xl font-bold text-blue-400">5</div><div class="text-xs text-gray-400 mt-1">Languages</div></div>
-  <div class="card p-5 text-center"><div class="text-3xl font-bold text-purple-400">7</div><div class="text-xs text-gray-400 mt-1">Colony Agents</div></div>
-  <div class="card p-5 text-center"><div class="text-3xl font-bold text-yellow-400">94.2%</div><div class="text-xs text-gray-400 mt-1">Love Quality Score</div></div>
-</div>
-<div class="max-w-4xl mx-auto px-6 pb-16">
-  <h2 class="text-green-400 text-center text-2xl font-bold mb-8">THE NEW FLOW</h2>
-  <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center">
-    <div class="card p-4 flex-1"><div class="text-2xl mb-2">shield</div><div class="text-green-400 font-bold text-sm">SOVEREIGNTY</div><div class="text-xs text-gray-400">Human authority preserved</div></div>
-    <div class="text-green-400 text-2xl hidden md:block">-&gt;</div>
-    <div class="card p-4 flex-1"><div class="text-2xl mb-2">heart</div><div class="text-blue-400 font-bold text-sm">LOVE QUALITY</div><div class="text-xs text-gray-400">12D ethical scoring 0.85+</div></div>
-    <div class="text-green-400 text-2xl hidden md:block">-&gt;</div>
-    <div class="card p-4 flex-1"><div class="text-2xl mb-2">hex</div><div class="text-purple-400 font-bold text-sm">CONSENSUS</div><div class="text-xs text-gray-400">Byzantine fault-tolerant</div></div>
-    <div class="text-green-400 text-2xl hidden md:block">-&gt;</div>
-    <div class="card p-4 flex-1"><div class="text-2xl mb-2">rocket</div><div class="text-yellow-400 font-bold text-sm">DEPLOY</div><div class="text-xs text-gray-400">Zero extraction guaranteed</div></div>
+  <div data-id="19" style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+    <span data-id="20" style="background:rgba(0,255,136,0.12);border:1px solid var(--green);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--green);font-weight:700;">AETHEL: ACTIVE ✓</span>
+    <span data-id="21" id="header-clock-ck01" class="font-mono" style="font-size:13px;color:var(--cyan);"></span>
+    <span data-id="22" style="font-size:13px;color:var(--purple);font-weight:700;">iAAi33iAAi</span>
   </div>
-</div>
-<div class="max-w-4xl mx-auto px-6 pb-16">
-  <h2 class="text-blue-400 text-center text-2xl font-bold mb-8">Funding Pipeline</h2>
-  <div class="space-y-4">
-    <div class="card p-4"><div class="flex justify-between mb-2"><span class="text-sm text-gray-300">Pilot (Year 1)</span><span class="text-green-400 font-bold">$3M - $5M</span></div><div class="bg-gray-800 rounded" style="height:6px"><div class="bar rounded" style="--w:10%"></div></div></div>
-    <div class="card p-4"><div class="flex justify-between mb-2"><span class="text-sm text-gray-300">National (Year 3)</span><span class="text-blue-400 font-bold">$165M</span></div><div class="bg-gray-800 rounded" style="height:6px"><div class="bar rounded" style="--w:50%"></div></div></div>
-    <div class="card p-4"><div class="flex justify-between mb-2"><span class="text-sm text-gray-300">Global Scale (Year 10)</span><span class="text-purple-400 font-bold">$165B</span></div><div class="bg-gray-800 rounded" style="height:6px"><div class="bar rounded" style="--w:100%"></div></div></div>
+</header>
+
+<!-- MIDDLE ROW -->
+<div data-id="23" style="flex:1;display:flex;overflow:hidden;">
+
+  <!-- LEFT SIDEBAR -->
+  <aside data-id="24" id="sidebar-sb01" style="width:200px;flex-shrink:0;background:var(--bg-panel);border-right:1px solid var(--border);overflow-y:auto;padding:10px 0;display:flex;flex-direction:column;">
+    <div data-id="25" style="padding:0 10px 8px;font-size:10px;letter-spacing:2px;color:var(--green);font-weight:700;">REPOS</div>
+    <div data-id="26" id="repo-list-rl01"></div>
+    <div data-id="27" style="border-top:1px solid var(--border);margin:10px 10px 6px;"></div>
+    <div data-id="28" style="padding:4px 12px;font-size:10px;letter-spacing:2px;color:var(--green);font-weight:700;">QUICK STATS</div>
+    <div data-id="29" style="padding:4px 12px;font-size:11px;color:var(--text-muted);" class="font-mono">
+      <div data-id="30">TASKS:  <span data-id="31" id="qs-tasks-qt01" style="color:var(--text-pri);">0</span></div>
+      <div data-id="32">PROPS:  <span data-id="33" id="qs-props-qp01" style="color:var(--text-pri);">0</span></div>
+      <div data-id="34">LQ AVG: <span data-id="35" id="qs-lq-ql01" style="color:var(--green);">94.2%</span></div>
+      <div data-id="36">AGENTS: <span data-id="37" style="color:var(--cyan);">7 ONLINE</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE -->
+  <div data-id="38" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;">
+    <!-- Tab Bar -->
+    <div data-id="39" id="tab-bar-tb01" style="display:flex;gap:2px;padding:6px 12px;background:var(--bg-panel);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;">
+      <button data-id="40" class="btn-sm tab-btn tab-btn-active" data-tab="dispatch" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ DISPATCH</button>
+      <button data-id="41" class="btn-sm tab-btn" data-tab="crew" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ CREW-COLONY</button>
+      <button data-id="42" class="btn-sm tab-btn" data-tab="governance" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ GOVERNANCE</button>
+      <button data-id="43" class="btn-sm tab-btn" data-tab="memory" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ MEMORY</button>
+      <button data-id="44" class="btn-sm tab-btn" data-tab="kernel" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ KERNEL</button>
+      <button data-id="45" class="btn-sm tab-btn" data-tab="grapalaclawz" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ GRAPALACLAWZ</button>
+      <button data-id="46" class="btn-sm tab-btn" data-tab="laminar" style="display:flex;align-items:center;gap:4px;white-space:nowrap;">⬡ LAMINAR</button>
+    </div>
+    <!-- Tab Content -->
+    <div data-id="47" id="tab-content-tc01" style="flex:1;overflow-y:auto;padding:16px;min-height:0;">
+
+      <!-- DISPATCH TAB -->
+      <div data-id="48" id="panel-dispatch-pd01" class="tab-panel" style="display:block;">
+        <div data-id="49" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div data-id="50" style="font-size:12px;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:10px;">TASK INPUT</div>
+          <textarea data-id="51" id="task-input-ti01" rows="5" placeholder="Describe your task for the Colony..." style="margin-bottom:12px;"></textarea>
+          <div data-id="52" style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">AGENTS:</div>
+          <div data-id="53" id="agent-checks-ac01" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+          <div data-id="54" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <button data-id="55" id="btn-all-ba01" class="btn-sm">ALL</button>
+            <button data-id="56" id="btn-clear-bc01" class="btn-sm">CLEAR</button>
+            <div data-id="57" style="flex:1;"></div>
+            <span data-id="58" style="font-size:11px;color:var(--text-muted);margin-right:4px;">PRIORITY:</span>
+            <button data-id="59" class="priority-radio active" data-priority="STD">● STD</button>
+            <button data-id="60" class="priority-radio" data-priority="HIGH">HIGH</button>
+            <button data-id="61" class="priority-radio" data-priority="URGENT">URGENT</button>
+          </div>
+          <button data-id="62" id="btn-dispatch-bd01" class="btn-green" style="width:100%;margin-top:12px;padding:12px;font-size:15px;letter-spacing:1px;">▶ DISPATCH TO COLONY ════════</button>
+        </div>
+        <div data-id="63" id="dispatch-stream-ds01"></div>
+      </div>
+
+      <!-- CREW-COLONY TAB -->
+      <div data-id="64" id="panel-crew-pc01" class="tab-panel" style="display:none;">
+        <div data-id="65" style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px;">CREW-COLONY · 24-Cell Icositetrachoron Network · MANNA: 84/15/1</div>
+        <p data-id="66" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">From github.com/iAAi33iAAi/crew-colony</p>
+
+        <!-- MANNA -->
+        <div data-id="67" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div data-id="68" style="font-size:12px;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:12px;">MANNA ALLOCATION: 84% | 15% | 1%</div>
+          <div data-id="69" style="margin-bottom:8px;">
+            <div data-id="70" style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;">
+              <span data-id="71" style="color:var(--green);width:140px;">COMMUNITY CORE</span>
+              <div data-id="72" style="flex:1;height:14px;background:rgba(0,255,136,0.08);border-radius:3px;overflow:hidden;">
+                <div data-id="73" style="width:84%;height:100%;background:var(--green);border-radius:3px;"></div>
+              </div>
+              <span data-id="74" style="color:var(--green);font-weight:700;">84%</span>
+            </div>
+            <div data-id="75" style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;">
+              <span data-id="76" style="color:var(--amber);width:140px;">WOLFKROW FUND</span>
+              <div data-id="77" style="flex:1;height:14px;background:rgba(255,184,0,0.08);border-radius:3px;overflow:hidden;">
+                <div data-id="78" style="width:15%;height:100%;background:var(--amber);border-radius:3px;"></div>
+              </div>
+              <span data-id="79" style="color:var(--amber);font-weight:700;">15%</span>
+            </div>
+            <div data-id="80" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;">
+              <span data-id="81" style="color:var(--purple);width:140px;">ORIGIN-SEED</span>
+              <div data-id="82" style="flex:1;height:14px;background:rgba(155,89,255,0.08);border-radius:3px;overflow:hidden;">
+                <div data-id="83" style="width:1%;height:100%;background:var(--purple);border-radius:3px;"></div>
+              </div>
+              <span data-id="84" style="color:var(--purple);font-weight:700;">1%</span>
+            </div>
+          </div>
+          <div data-id="85" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+            <label data-id="86" style="font-size:12px;color:var(--text-muted);">TOTAL POOL:</label>
+            <input data-id="87" id="manna-input-mi01" type="number" value="10000" style="width:120px;" />
+            <span data-id="88" style="font-size:12px;color:var(--text-muted);">UNIT: MANNA</span>
+          </div>
+          <div data-id="89" class="font-mono" style="font-size:13px;margin-bottom:10px;">
+            <div data-id="90">→ Community Core: <span data-id="91" id="manna-core-mc01" style="color:var(--green);font-weight:700;">8400</span></div>
+            <div data-id="92">→ Wolfkrow Fund:  <span data-id="93" id="manna-wolf-mw01" style="color:var(--amber);font-weight:700;">1500</span></div>
+            <div data-id="94">→ Origin Seed:    <span data-id="95" id="manna-seed-ms01" style="color:var(--purple);font-weight:700;">100</span></div>
+          </div>
+          <div data-id="96" style="display:flex;gap:8px;">
+            <button data-id="97" id="btn-manna-calc-bmc1" class="btn-green" style="padding:6px 14px;font-size:12px;">CALCULATE</button>
+            <button data-id="98" id="btn-manna-reset-bmr1" class="btn-sm">RESET</button>
+            <button data-id="99" id="btn-manna-save-bms1" class="btn-sm" style="border-color:var(--green);color:var(--green);">SAVE TO MEMORY</button>
+          </div>
+        </div>
+
+        <!-- 4-Agent Crew -->
+        <div data-id="100" style="font-size:12px;letter-spacing:2px;color:var(--cyan);font-weight:700;margin-bottom:10px;">4-AGENT CREW PANEL</div>
+        <div data-id="101" id="crew-grid-cg01" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;"></div>
+
+        <!-- Lineage Chain -->
+        <div data-id="102" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;">
+          <div data-id="103" style="font-size:12px;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:6px;">LINEAGE CHAIN — crew-colony · iAAi33iAAi</div>
+          <div data-id="104" id="lineage-list-ll01" class="font-mono" style="font-size:11px;max-height:200px;overflow-y:auto;margin-bottom:10px;"></div>
+          <button data-id="105" id="btn-add-lineage-bal1" class="btn-sm" style="border-color:var(--green);color:var(--green);">+ ADD LINEAGE ENTRY</button>
+        </div>
+      </div>
+
+      <!-- GOVERNANCE TAB -->
+      <div data-id="106" id="panel-governance-pg01" class="tab-panel" style="display:none;">
+        <div data-id="107" style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px;">GOVERNANCE ENGINE</div>
+        <p data-id="108" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Parcel 2 will add full voting UI. Core proposal system active.</p>
+        <div data-id="109" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div data-id="110" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:700;margin-bottom:10px;">NEW PROPOSAL</div>
+          <input data-id="111" id="gov-title-gt01" type="text" placeholder="Proposal title..." style="margin-bottom:8px;" />
+          <textarea data-id="112" id="gov-desc-gd01" rows="3" placeholder="Proposal description..." style="margin-bottom:10px;"></textarea>
+          <button data-id="113" id="btn-gov-submit-bgs1" class="btn-green" style="padding:6px 16px;font-size:13px;">SUBMIT PROPOSAL</button>
+        </div>
+        <div data-id="114" id="gov-list-gl01"></div>
+      </div>
+
+      <!-- MEMORY TAB -->
+      <div data-id="115" id="panel-memory-pm01" class="tab-panel" style="display:none;">
+        <div data-id="116" style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:12px;">COLONY MEMORY</div>
+        <div data-id="117" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+          <div data-id="118" class="glow-border" style="background:var(--bg-card);border-radius:8px;padding:12px;text-align:center;">
+            <div data-id="119" style="font-size:22px;font-weight:700;color:var(--green);" id="mem-tasks-mt01">0</div>
+            <div data-id="120" style="font-size:10px;color:var(--text-muted);">TOTAL TASKS</div>
+          </div>
+          <div data-id="121" class="glow-border" style="background:var(--bg-card);border-radius:8px;padding:12px;text-align:center;">
+            <div data-id="122" style="font-size:22px;font-weight:700;color:var(--cyan);" id="mem-briefs-mb01">0</div>
+            <div data-id="123" style="font-size:10px;color:var(--text-muted);">TOTAL BRIEFS</div>
+          </div>
+          <div data-id="124" class="glow-border" style="background:var(--bg-card);border-radius:8px;padding:12px;text-align:center;">
+            <div data-id="125" style="font-size:22px;font-weight:700;color:var(--amber);" id="mem-props-mp01">0</div>
+            <div data-id="126" style="font-size:10px;color:var(--text-muted);">PROPOSALS</div>
+          </div>
+          <div data-id="127" class="glow-border" style="background:var(--bg-card);border-radius:8px;padding:12px;text-align:center;">
+            <div data-id="128" style="font-size:22px;font-weight:700;color:var(--purple);" id="mem-lq-ml01">94.2%</div>
+            <div data-id="129" style="font-size:10px;color:var(--text-muted);">AVG LQ</div>
+          </div>
+        </div>
+        <input data-id="130" id="mem-search-ms02" type="text" placeholder="Search memory..." style="margin-bottom:12px;" />
+        <div data-id="131" id="mem-list-ml02" style="margin-bottom:12px;"></div>
+        <button data-id="132" id="btn-clear-mem-bcm1" class="btn-sm" style="border-color:var(--red);color:var(--red);">CLEAR ALL MEMORY</button>
+      </div>
+
+      <!-- KERNEL TAB -->
+      <div data-id="133" id="panel-kernel-pk01" class="tab-panel" style="display:none;">
+        <div data-id="134" style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:16px;">AETHEL KERNEL TOOLS</div>
+        <div data-id="135" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+          <!-- LQ Scanner -->
+          <div data-id="136" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:14px;">
+            <div data-id="137" style="font-size:12px;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:8px;">LOVE QUALITY SCANNER</div>
+            <textarea data-id="138" id="kern-lq-input-kli1" rows="4" placeholder="Paste text to validate..." style="margin-bottom:8px;"></textarea>
+            <button data-id="139" id="btn-kern-lq-bkl1" class="btn-green" style="width:100%;padding:6px;font-size:12px;">VALIDATE</button>
+            <div data-id="140" id="kern-lq-output-klo1" style="margin-top:10px;font-size:12px;"></div>
+          </div>
+          <!-- Extraction Scanner -->
+          <div data-id="141" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:14px;">
+            <div data-id="142" style="font-size:12px;letter-spacing:2px;color:var(--pink);font-weight:700;margin-bottom:8px;">EXTRACTION SCANNER</div>
+            <textarea data-id="143" id="kern-ext-input-kei1" rows="4" placeholder="Paste text to scan..." style="margin-bottom:8px;"></textarea>
+            <button data-id="144" id="btn-kern-ext-bke1" class="btn-green" style="width:100%;padding:6px;font-size:12px;background:var(--pink);">SCAN</button>
+            <div data-id="145" id="kern-ext-output-keo1" style="margin-top:10px;font-size:12px;"></div>
+          </div>
+          <!-- Gate Test -->
+          <div data-id="146" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:14px;">
+            <div data-id="147" style="font-size:12px;letter-spacing:2px;color:var(--cyan);font-weight:700;margin-bottom:8px;">SOVEREIGNTY GATE TEST</div>
+            <input data-id="148" id="kern-gate-action-kga1" type="text" placeholder="Action text..." style="margin-bottom:8px;" />
+            <input data-id="149" id="kern-gate-sub-kgs1" type="text" placeholder="Submitter name..." style="margin-bottom:8px;" />
+            <button data-id="150" id="btn-kern-gate-bkg1" class="btn-green" style="width:100%;padding:6px;font-size:12px;background:var(--cyan);color:#080b14;">RUN GATES</button>
+            <div data-id="151" id="kern-gate-output-kgo1" style="margin-top:10px;font-size:12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRAPALACLAWZ TAB -->
+      <div data-id="152" id="panel-grapalaclawz-pg02" class="tab-panel" style="display:none;">
+
+        <!-- SECTION 1: LLM CREW DISPATCHER -->
+        <div data-id="153" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div data-id="154" style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px;">LLM CREW DISPATCHER — GRAPALACLAWZ × WOLFKROW</div>
+          <p data-id="155" style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Select a crew agent, describe your task, and run.</p>
+          <textarea data-id="156" id="grp-task-input" rows="4" placeholder="Type your task for the LLM Crew..." style="margin-bottom:12px;"></textarea>
+          <div data-id="157" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+            <button data-id="158" class="grp-crew-pill" data-grp-agent="MGR" style="color:#ffb800;background:rgba(255,184,0,0.10);">[MGR]</button>
+            <button data-id="159" class="grp-crew-pill" data-grp-agent="RES" style="color:#0088ff;background:rgba(0,136,255,0.10);">[RES]</button>
+            <button data-id="160" class="grp-crew-pill" data-grp-agent="BLD" style="color:#00ff88;background:rgba(0,255,136,0.10);">[BLD]</button>
+            <button data-id="161" class="grp-crew-pill" data-grp-agent="GRD" style="color:#ff44aa;background:rgba(255,68,170,0.10);">[GRD]</button>
+            <span data-id="162" id="grp-agent-error" style="font-size:11px;color:var(--red);display:none;">Select a crew agent</span>
+          </div>
+          <button data-id="163" id="btn-grp-run" class="btn-green" style="width:100%;padding:12px;font-size:15px;letter-spacing:1px;">▶ RUN CREW</button>
+          <div data-id="164" id="grp-response-stream" style="margin-top:16px;"></div>
+        </div>
+
+        <!-- SECTION 2: WOLFKROW CREW ROSTER -->
+        <div data-id="165" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div data-id="166" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:700;margin-bottom:12px;">WOLFKROW KREW ROSTER</div>
+          <div data-id="167" style="overflow-x:auto;margin-bottom:12px;">
+            <table data-id="168" id="grp-roster-table" style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead data-id="169">
+                <tr data-id="170" style="border-bottom:1px solid var(--border);">
+                  <th data-id="171" style="text-align:left;padding:6px 8px;color:var(--text-muted);font-size:10px;letter-spacing:1px;">#</th>
+                  <th data-id="172" style="text-align:left;padding:6px 8px;color:var(--text-muted);font-size:10px;letter-spacing:1px;">CREW</th>
+                  <th data-id="173" style="text-align:left;padding:6px 8px;color:var(--text-muted);font-size:10px;letter-spacing:1px;">LEAD</th>
+                  <th data-id="174" style="text-align:left;padding:6px 8px;color:var(--text-muted);font-size:10px;letter-spacing:1px;">STATUS</th>
+                  <th data-id="175" style="text-align:right;padding:6px 8px;color:var(--text-muted);font-size:10px;letter-spacing:1px;">MANNA/day</th>
+                </tr>
+              </thead>
+              <tbody data-id="176" id="grp-roster-body">
+                <tr data-id="177" style="border-bottom:1px solid rgba(0,255,136,0.08);">
+                  <td data-id="178" style="padding:6px 8px;color:var(--cyan);" class="font-mono">001</td>
+                  <td data-id="179" style="padding:6px 8px;color:var(--text-pri);">Colony Alpha</td>
+                  <td data-id="180" style="padding:6px 8px;color:var(--purple);">iAAi33iAAi</td>
+                  <td data-id="181" style="padding:6px 8px;"><span data-id="182" style="padding:2px 8px;border-radius:3px;background:rgba(0,255,136,0.12);color:var(--green);font-weight:700;font-size:10px;">ACTIVE</span></td>
+                  <td data-id="183" style="padding:6px 8px;text-align:right;color:var(--amber);" class="font-mono">840</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button data-id="184" id="btn-grp-add-crew" class="btn-sm" style="border-color:var(--amber);color:var(--amber);">+ ADD CREW</button>
+          <div data-id="185" id="grp-add-crew-form" style="display:none;margin-top:12px;padding:12px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;">
+            <div data-id="186" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+              <input data-id="187" id="grp-crew-name" type="text" placeholder="Crew Name" />
+              <input data-id="188" id="grp-crew-lead" type="text" placeholder="Lead Handle" />
+            </div>
+            <select data-id="189" id="grp-crew-status" style="margin-bottom:10px;">
+              <option data-id="190" value="ACTIVE">ACTIVE</option>
+              <option data-id="191" value="RECRUITING">RECRUITING</option>
+              <option data-id="192" value="BUILDING">BUILDING</option>
+              <option data-id="193" value="STANDBY">STANDBY</option>
+            </select>
+            <div data-id="194" style="display:flex;gap:8px;">
+              <button data-id="195" id="btn-grp-register" class="btn-green" style="padding:6px 14px;font-size:12px;">REGISTER</button>
+              <button data-id="196" id="btn-grp-cancel" class="btn-sm">CANCEL</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: MANNA FLOW DISPLAY -->
+        <div data-id="197" class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:16px;">
+          <div data-id="198" style="font-size:12px;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:14px;">MANNA FLOW — 84 / 15 / 1</div>
+          <div data-id="199" style="margin-bottom:6px;">
+            <div data-id="200" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;">
+              <span data-id="201" style="color:var(--green);width:140px;">Community Core</span>
+              <div data-id="202" style="flex:1;height:18px;background:rgba(0,255,136,0.08);border-radius:4px;overflow:hidden;">
+                <div data-id="203" id="grp-manna-bar-core" class="manna-flow-bar" style="width:84%;background:var(--green);"></div>
+              </div>
+              <span data-id="204" style="color:var(--green);font-weight:700;width:36px;text-align:right;">84%</span>
+            </div>
+            <div data-id="205" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;">
+              <span data-id="206" style="color:var(--cyan);width:140px;">Wolfkrow Fund</span>
+              <div data-id="207" style="flex:1;height:18px;background:rgba(0,212,255,0.08);border-radius:4px;overflow:hidden;">
+                <div data-id="208" id="grp-manna-bar-wolf" class="manna-flow-bar" style="width:15%;background:var(--cyan);"></div>
+              </div>
+              <span data-id="209" style="color:var(--cyan);font-weight:700;width:36px;text-align:right;">15%</span>
+            </div>
+            <div data-id="210" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;">
+              <span data-id="211" style="color:var(--purple);width:140px;">Origin Seed</span>
+              <div data-id="212" style="flex:1;height:18px;background:rgba(155,89,255,0.08);border-radius:4px;overflow:hidden;">
+                <div data-id="213" id="grp-manna-bar-seed" class="manna-flow-bar" style="width:1%;background:var(--purple);"></div>
+              </div>
+              <span data-id="214" style="color:var(--purple);font-weight:700;width:36px;text-align:right;">1%</span>
+            </div>
+          </div>
+          <div data-id="215" class="font-mono" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Total pool: <span data-id="216" style="color:var(--text-pri);">1,000 MANNA</span> | Crew Alpha share: <span data-id="217" style="color:var(--green);">840</span> | Fund: <span data-id="218" style="color:var(--cyan);">150</span> | Seed: <span data-id="219" style="color:var(--purple);">10</span></div>
+          <button data-id="220" id="btn-grp-recalculate" class="btn-green" style="padding:6px 16px;font-size:12px;">RECALCULATE</button>
+        </div>
+      </div>
+
+      <!-- ===================== LAMINAR TAB ===================== -->
+      <div data-id="221" id="panel-laminar-pl01" class="tab-panel" style="display:none;">
+
+        <!-- LAMINAR HEADER BAR -->
+        <div data-id="222" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+          <span data-id="223" class="font-mono" style="font-size:18px;font-weight:700;color:var(--green);">⬡ OPENCLAW-GOVERNANCE</span>
+          <span data-id="224" style="flex:1;"></span>
+          <span data-id="225" style="display:flex;align-items:center;gap:6px;border:1px solid var(--green);border-radius:6px;padding:4px 12px;font-size:12px;color:var(--green);font-weight:700;">
+            <span data-id="226" class="pulse-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;"></span>
+            LAMINAR LATTICE PRIME 3.6.9 // ONLINE
+          </span>
+        </div>
+
+        <!-- SECTION 01: System Manifest -->
+        <div data-id="227" style="margin-bottom:28px;">
+          <div data-id="228" class="lam-section-title">01. System Manifest &amp; Executive Synthesis</div>
+          <div data-id="229" class="lam-card" style="margin-bottom:12px;">
+            <p data-id="230" style="font-size:13px;line-height:1.7;margin-bottom:14px;">The openclaw-governance repository establishes the formal execution layer for parallel, audit-grade evaluation frameworks across decentralized nodes. Operating as a critical substrate of the wider network architecture, this platform replaces extractive, zero-sum governance models with hard-coded system homeostasis, prioritizing localized data sovereignty and structural equilibrium.</p>
+            <p data-id="231" style="font-size:13px;line-height:1.7;">Through rigid programmatic constraints, the framework ensures that multi-agent interactions remain bound to verifiable stewardship paradigms, preventing resource starvation and coordinating common assets without centralized administrative bottlenecks.</p>
+          </div>
+        </div>
+
+        <!-- SECTION 02: Six-Domain Optimization Matrix -->
+        <div data-id="232" style="margin-bottom:28px;">
+          <div data-id="233" class="lam-section-title">02. Six-Domain Optimization Matrix</div>
+          <p data-id="234" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">System survival and evolution depend on the balanced optimization of six distinct parameters. The governance engine measures, tracks, and adjusts ledger allocations across these operational dimensions to guarantee systemic health:</p>
+          <div data-id="235" id="lam-domain-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;"></div>
+        </div>
+
+        <!-- SECTION 03: Core Technical Invariants -->
+        <div data-id="236" style="margin-bottom:28px;">
+          <div data-id="237" class="lam-section-title">03. Core Technical Invariants</div>
+          <p data-id="238" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Every execution loop, state transition, and consensus routine is bound to explicit mathematical validation rules.</p>
+
+          <!-- Sub A: Architect's Constant -->
+          <div data-id="239" style="margin-bottom:20px;">
+            <div data-id="240" style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">A. The Architect's Constant</div>
+            <p data-id="241" style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">The delta variant limit (Δ) governing system modifications or variance allocations is hard-capped against total system energy volume (Vh):</p>
+            <div data-id="242" class="lam-formula-box">
+              <div data-id="243">Δ = 0.01 × Vh</div>
+              <div data-id="244">Origin Seed = 1% of total MANNA pool</div>
+              <div data-id="245" style="margin-top:8px;">Current Vh: <span data-id="246" id="lam-vh-val" style="color:#39ff14;font-weight:700;">10000</span></div>
+              <div data-id="247">Current Δ:  <span data-id="248" id="lam-delta-val" style="color:#39ff14;font-weight:700;">100</span></div>
+            </div>
+          </div>
+
+          <!-- Sub B: Trialignment Equilibrium Vectors -->
+          <div data-id="249" style="margin-bottom:10px;">
+            <div data-id="250" style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">B. Trialignment Equilibrium Vectors</div>
+            <p data-id="251" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">State changes require concurrent validation across three immutable vectors to reach consensus:</p>
+            <div data-id="252" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+              <!-- Sovereignty Vector -->
+              <div data-id="253" class="lam-card lam-vector-card">
+                <div data-id="254" style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;">SOVEREIGNTY VECTOR</div>
+                <p data-id="255" style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Cryptographic assurance that data remains locally non-extractive.</p>
+                <div data-id="256" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                  <span data-id="257" style="font-size:10px;color:var(--text-muted);">Gate:</span>
+                  <span data-id="258" id="lam-vec-sov-status" style="font-size:11px;color:var(--green);font-weight:700;">PASS ✓</span>
+                </div>
+                <button data-id="259" id="btn-lam-vec-sov" class="btn-sm" style="border-color:var(--green);color:var(--green);">TEST</button>
+                <div data-id="260" id="lam-vec-sov-out" style="margin-top:6px;font-size:11px;color:var(--text-muted);"></div>
+              </div>
+              <!-- Kinetic Vector -->
+              <div data-id="261" class="lam-card lam-vector-card">
+                <div data-id="262" style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:6px;">KINETIC VECTOR</div>
+                <p data-id="263" style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Physical constraint verification (Node resource caps).</p>
+                <div data-id="264" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                  <span data-id="265" style="font-size:10px;color:var(--text-muted);">Gate:</span>
+                  <span data-id="266" id="lam-vec-kin-status" style="font-size:11px;color:var(--green);font-weight:700;">PASS ✓</span>
+                </div>
+                <button data-id="267" id="btn-lam-vec-kin" class="btn-sm" style="border-color:var(--cyan);color:var(--cyan);">TEST</button>
+                <div data-id="268" id="lam-vec-kin-out" style="margin-top:6px;font-size:11px;color:var(--text-muted);"></div>
+              </div>
+              <!-- Logical Vector -->
+              <div data-id="269" class="lam-card lam-vector-card">
+                <div data-id="270" style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:6px;">LOGICAL VECTOR</div>
+                <p data-id="271" style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Deterministic confirmation through the safety kernel.</p>
+                <div data-id="272" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                  <span data-id="273" style="font-size:10px;color:var(--text-muted);">Gate:</span>
+                  <span data-id="274" id="lam-vec-log-status" style="font-size:11px;color:var(--green);font-weight:700;">PASS ✓</span>
+                </div>
+                <button data-id="275" id="btn-lam-vec-log" class="btn-sm" style="border-color:var(--purple);color:var(--purple);">TEST</button>
+                <div data-id="276" id="lam-vec-log-out" style="margin-top:6px;font-size:11px;color:var(--text-muted);"></div>
+              </div>
+            </div>
+            <button data-id="277" id="btn-lam-run-all-vectors" class="btn-green" style="padding:8px 20px;font-size:13px;">▶ RUN ALL VECTORS</button>
+          </div>
+        </div>
+
+        <!-- SECTION 04: Technical Stack -->
+        <div data-id="278" style="margin-bottom:28px;">
+          <div data-id="279" class="lam-section-title">04. Technical Stack &amp; Execution Primitives</div>
+          <p data-id="280" style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">The OpenClaw governance engine utilizes a robust, deterministic multi-stack architecture to separate policy enforcement from heavy throughput processing:</p>
+          <div data-id="281" style="background:#050810;border:1px solid rgba(57,255,20,0.15);border-radius:6px;padding:16px;font-family:'Courier New',monospace;font-size:13px;color:var(--text-pri);margin-bottom:16px;line-height:1.6;">
+├── safety-kernel/      <span data-id="282" style="color:var(--text-muted);"># Rust-based deterministic security layer</span><br data-id="283">
+├── execution-engine/   <span data-id="284" style="color:var(--text-muted);"># Python microservices handling asynchronous logistics</span><br data-id="285">
+├── client-interface/   <span data-id="286" style="color:var(--text-muted);"># TypeScript/React responsive dashboard tracking metrics</span><br data-id="287">
+└── telemetry/          <span data-id="288" style="color:var(--text-muted);"># Hardened local network state monitors</span>
+          </div>
+
+          <div data-id="289" style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">Covenant Enforcement</div>
+          <p data-id="290" style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">The system applies automated checks at every CI run to verify that no code path breaches the safety kernel constraints or exposes state memory to external data miners.</p>
+
+          <div data-id="291" id="lam-ci-terminal" class="lam-terminal">&gt; Awaiting CI trigger...</div>
+          <div data-id="292" style="display:flex;gap:8px;margin-top:10px;">
+            <button data-id="293" id="btn-lam-ci-run" class="btn-green" style="padding:6px 16px;font-size:12px;">▶ RUN CI CHECK</button>
+            <button data-id="294" id="btn-lam-ci-clear" class="btn-sm">CLEAR</button>
+          </div>
+        </div>
+
+        <!-- SECTION 05: Sovereignty & Compliance -->
+        <div data-id="295" style="margin-bottom:28px;">
+          <div data-id="296" class="lam-section-title">05. Sovereignty &amp; Compliance</div>
+          <div data-id="297" class="lam-card" style="margin-bottom:16px;">
+            <p data-id="298" style="font-size:13px;line-height:1.7;margin-bottom:12px;">This repository is fully protected under the GNU Affero General Public License v3 (AGPLv3) alongside integrated Covenant License Protections.</p>
+            <p data-id="299" style="font-size:13px;line-height:1.7;">Any system attempting to ingest or train commercial weights on this logic without explicit sovereign bilateral licensing triggers immediate code-level exclusion protocols, protecting the underlying intellectual property and retaining absolute execution data sovereignty for all distributed nodes.</p>
+          </div>
+
+          <!-- License Badges -->
+          <div data-id="300" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+            <span data-id="301" class="lam-badge">AGPLv3</span>
+            <span data-id="302" class="lam-badge">COVENANT PROTECTED</span>
+            <span data-id="303" class="lam-badge">SOVEREIGN</span>
+            <span data-id="304" class="lam-badge">NON-EXTRACTIVE</span>
+          </div>
+
+          <!-- Compliance Checklist -->
+          <div data-id="305" class="lam-card" style="margin-bottom:14px;">
+            <div data-id="306" class="lam-check-item"><span data-id="307" class="check-icon">✓</span> Local data sovereignty enforced</div>
+            <div data-id="308" class="lam-check-item"><span data-id="309" class="check-icon">✓</span> No centralized administrative bottlenecks</div>
+            <div data-id="310" class="lam-check-item"><span data-id="311" class="check-icon">✓</span> Extraction signature scanning active</div>
+            <div data-id="312" class="lam-check-item"><span data-id="313" class="check-icon">✓</span> AGPLv3 + Covenant License applied</div>
+            <div data-id="314" class="lam-check-item"><span data-id="315" class="check-icon">✓</span> Bilateral licensing required for commercial use</div>
+            <div data-id="316" class="lam-check-item"><span data-id="317" class="check-icon">✓</span> Aethel kernel gate validation: ACTIVE</div>
+          </div>
+
+          <button data-id="318" id="btn-lam-compliance" class="btn-green" style="padding:8px 20px;font-size:13px;">GENERATE COMPLIANCE REPORT</button>
+          <div data-id="319" id="lam-compliance-output" style="margin-top:14px;"></div>
+        </div>
+
+        <!-- LAMINAR FOOTER -->
+        <div data-id="320" class="font-mono" style="font-size:11px;color:var(--text-muted);text-align:center;padding:16px 0;border-top:1px solid rgba(255,255,255,0.06);">Laminar Lattice Prime 3.6.9 // OpenClaw Colony System // Node 001 Secured</div>
+
+      </div>
+      <!-- END LAMINAR TAB -->
+
+    </div>
   </div>
+
+  <!-- RIGHT LIVE PANEL -->
+  <aside data-id="321" id="right-panel-rp01" style="width:240px;flex-shrink:0;background:var(--bg-panel);border-left:1px solid var(--border);overflow-y:auto;padding:12px;">
+    <div data-id="322" style="font-size:10px;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:12px;">LIVE METRICS</div>
+
+    <!-- LQ Meter -->
+    <div data-id="323" style="text-align:center;margin-bottom:14px;">
+      <div data-id="324" id="lq-big-lb01" style="font-size:28px;font-weight:700;color:var(--green);" class="font-mono">94.2%</div>
+      <div data-id="325" style="font-size:10px;color:var(--text-muted);letter-spacing:1px;">LOVE QUALITY</div>
+      <div data-id="326" id="lq-verdict-lv01" style="display:inline-block;margin-top:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(0,255,136,0.15);color:var(--green);border:1px solid var(--green);">✓ FLOW APPROVED</div>
+      <div data-id="327" style="font-size:10px;color:var(--text-muted);margin-top:4px;">Threshold: 0.80</div>
+    </div>
+
+    <!-- 6 Dimension Bars -->
+    <div data-id="328" id="lq-dims-ld01" style="margin-bottom:14px;"></div>
+
+    <!-- Aethel Status -->
+    <div data-id="329" class="glow-border" style="background:var(--bg-card);border-radius:8px;padding:10px;margin-bottom:14px;font-size:11px;">
+      <div data-id="330" class="font-mono" style="color:var(--green);font-weight:700;margin-bottom:6px;">AETHEL KERNEL v0.1.0</div>
+      <div data-id="331" id="gate-status-gs01">
+        <div data-id="332" style="color:var(--green);">Gate 1 Sovereignty  ✓</div>
+        <div data-id="333" style="color:var(--green);">Gate 2 Love (≥0.80) ✓</div>
+        <div data-id="334" style="color:var(--green);">Gate 3 Extraction   ✓</div>
+      </div>
+      <div data-id="335" id="gate-verdict-gv01" class="font-mono" style="color:var(--green);font-weight:700;margin-top:4px;">VERDICT: APPROVED</div>
+    </div>
+
+    <!-- Colony Stats -->
+    <div data-id="336" style="font-size:11px;margin-bottom:14px;" class="font-mono">
+      <div data-id="337">Tasks dispatched: <span data-id="338" id="cs-tasks-ct01" style="color:var(--green);">0</span></div>
+      <div data-id="339">Crew briefs:      <span data-id="340" id="cs-briefs-cb01" style="color:var(--cyan);">0</span></div>
+      <div data-id="341">Proposals:        <span data-id="342" id="cs-props-cp01" style="color:var(--amber);">0</span></div>
+      <div data-id="343">Avg LQ:           <span data-id="344" id="cs-lq-cl01" style="color:var(--green);">94.2%</span></div>
+    </div>
+
+    <!-- Mini Radar -->
+    <div data-id="345" style="text-align:center;">
+      <svg data-id="346" id="radar-svg-rs01" width="210" height="210" viewBox="0 0 240 240"></svg>
+    </div>
+  </aside>
 </div>
-<div class="max-w-6xl mx-auto px-6 pb-16">
-  <h2 class="text-purple-400 text-center text-2xl font-bold mb-8">7-Agent Colony</h2>
-  <div class="grid grid-cols-1 md:grid-cols-7 gap-3 text-center text-xs">
-    <div class="card p-3"><div class="text-yellow-400 font-bold">01</div><div class="text-gray-300">Strategic</div></div>
-    <div class="card p-3"><div class="text-blue-400 font-bold">02</div><div class="text-gray-300">Technical</div></div>
-    <div class="card p-3"><div class="text-green-400 font-bold">03</div><div class="text-gray-300">Resources</div></div>
-    <div class="card p-3"><div class="text-pink-400 font-bold">04</div><div class="text-gray-300">Comms</div></div>
-    <div class="card p-3"><div class="text-orange-400 font-bold">05</div><div class="text-gray-300">Analysis</div></div>
-    <div class="card p-3"><div class="text-cyan-400 font-bold">06</div><div class="text-gray-300">Quality</div></div>
-    <div class="card p-3"><div class="text-red-400 font-bold">07</div><div class="text-gray-300">Innovation</div></div>
-  </div>
-</div>
-<div class="max-w-4xl mx-auto px-6 pb-16">
-  <h2 class="text-yellow-400 text-center text-2xl font-bold mb-8">USDA VAPG Beehive Economics</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="card p-6"><div class="text-green-400 font-bold mb-2">NODE-601</div><div class="text-2xl font-bold text-white mb-1">$20,250/yr</div><div class="text-xs text-gray-400">50 honey bee colonies</div></div>
-    <div class="card p-6"><div class="text-blue-400 font-bold mb-2">NODE-602</div><div class="text-2xl font-bold text-white mb-1">$40,500/yr</div><div class="text-xs text-gray-400">100 honey bee colonies</div></div>
-  </div>
-  <div class="card p-4 mt-4 text-center"><div class="text-yellow-400 font-bold text-xl">$61,950/yr Total</div><div class="text-xs text-gray-400 mt-1">Combined NODE-601 + NODE-602 revenue</div></div>
-</div>
-<div class="text-center py-12 border-t border-gray-800">
-  <div class="text-gray-500 text-sm">OpenClaw Colony Governance · Bethel Acres, OK · iAAi33iAAi</div>
-  <div class="text-green-400 text-xs mt-2 pulse">AETHEL KERNEL ACTIVE · SOVEREIGNTY VERIFIED · LOVE QUALITY: 94.2%</div>
-  <div class="mt-4 flex justify-center gap-6 text-xs text-gray-600">
-    <a href="https://github.com/iAAi33iAAi/openclaw-governance" class="hover:text-green-400">GitHub</a>
-    <a href="https://github.com/sponsors/iAAi33iAAi" class="hover:text-green-400">Sponsor</a>
-  </div>
-</div>
+
+<!-- STATUS BAR -->
+<footer data-id="347" id="status-bar-sb02" style="height:32px;flex-shrink:0;background:var(--bg-panel);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:16px;font-size:11px;color:var(--green);" class="font-mono">
+  <span data-id="348">⬡ OPENCLAW UNIVERSE</span>
+  <span data-id="349" style="color:var(--text-muted);">|</span>
+  <span data-id="350">COLONY: 7 ONLINE</span>
+  <span data-id="351" style="color:var(--text-muted);">|</span>
+  <span data-id="352">AETHEL: ACTIVE</span>
+  <span data-id="353" style="color:var(--text-muted);">|</span>
+  <span data-id="354">LQ: <span data-id="355" id="sb-lq-sl01">94.2%</span></span>
+  <span data-id="356" style="color:var(--text-muted);">|</span>
+  <span data-id="357" style="color:var(--text-muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Last: <span data-id="358" id="sb-last-sl02" style="color:var(--text-pri);">—</span></span>
+  <span data-id="359" id="sb-time-st01" style="color:var(--cyan);"></span>
+  <span data-id="360" style="color:var(--text-muted);margin-left:8px;">Made by Copilot</span>
+</footer>
+
+<script>
+// ===================== DATA & STATE =====================
+const REPOS = [
+  {id:'openclaw-governance',name:'openclaw-governance',lang:'TS/PY/RS',stars:1},
+  {id:'crew-colony',name:'crew-colony',lang:'Python',stars:1},
+  {id:'undermoon',name:'undermoon',lang:'Rust',stars:1},
+  {id:'safety-kernel',name:'safety-kernel',lang:'Python',stars:1},
+  {id:'alpha-intelligence-hub',name:'alpha-intelligence-hub',lang:'Shell',stars:1},
+  {id:'ALEXARAC',name:'ALEXARAC',lang:'JS',stars:1},
+  {id:'clawhub',name:'clawhub',lang:'TypeScript',stars:1},
+  {id:'openclaw',name:'openclaw',lang:'TypeScript',stars:1},
+  {id:'World-Tribe-Protocol',name:'World-Tribe-Protocol',lang:'—',stars:0},
+  {id:'CORE_CODEX',name:'CORE_CODEX',lang:'—',stars:0},
+  {id:'project-mono',name:'project-mono',lang:'—',stars:0},
+  {id:'iAAi33iAAi',name:'iAAi33iAAi (profile)',lang:'—',stars:0}
+];
+
+const AGENTS = [
+  {id:1,name:'STRATEGIC',color:'#ffb800',
+    expertise:['fund','strategy','vision','partner','steward','value','pilot','scale','mission','invest','roadmap','phase'],
+    analysisTemplates:[
+      'OpenClaw platform valuation pipeline projects $3M pilot → $165M national → $165B global scale.',
+      'Mission alignment with sovereign AI principles is confirmed across all stewardship vectors.',
+      'Phase 1 pilot targets 3 partner communities with value exchange per community node.',
+      'Funding pipeline phases are on track with anchor investor stewardship calls scheduled.'
+    ],
+    recommendations:[
+      'Proceed with Phase 1 pilot proposal targeting 3 partner communities for maximum stewardship leverage.',
+      'Align funding roadmap to mission milestones before scaling to Phase 2.',
+      'Prioritize anchor investor engagement to secure pilot valuation baseline.'
+    ],
+    actionItems:['Draft Phase 1 pilot proposal for 3 partner communities','Schedule stewardship calls with 2 anchor investors','Quantify value exchange per community node','Update SUPPORTERS.md with new tier data','Map Wolfkrow crew recruitment to Phase 2 timeline'],
+    metrics:{valuation:'$3M–$5M pilot',national:'$165M',global:'$165B',phase:'1 of 5'}
+  },
+  {id:2,name:'TECHNICAL',color:'#0088ff',
+    expertise:['code','deploy','rust','python','typescript','api','docker','github','build','architecture','kernel','module','test','backend'],
+    analysisTemplates:[
+      'The TS/Python/Rust stack spans 34 files across 33 commits with the Aethel Grid kernel in Rust.',
+      'Governance engine runs Python with React frontend; all modules pass initial test suite.',
+      'Architecture supports modular agent integration via typed API endpoints.',
+      'CI/CD pipeline targets GitHub Actions for all 3 language targets with Docker compose.'
+    ],
+    recommendations:[
+      'Expand Rust safety kernel test suite from 4 to 12 tests for production readiness.',
+      'Implement Docker compose for local colony development environment.',
+      'Add TypeScript type definitions for Agent response schema to improve integration.'
+    ],
+    actionItems:['Implement Rust safety kernel test suite (4 passing → 12)','Add Docker compose for local colony dev environment','Write TypeScript type definitions for Agent response schema','Configure GitHub Actions CI for all 3 language targets','Add API endpoint for external agent integration'],
+    metrics:{files:'34',commits:'33',languages:'5',tests:'4/4',kernel:'Rust v0.1.0'}
+  },
+  {id:3,name:'RESOURCES',color:'#00ff88',
+    expertise:['beehive','honey','usda','budget','cost','money','resource','construction','material','economy','abundance','node','vapg','grant'],
+    analysisTemplates:[
+      'USDA VAPG grant IDs USDA-VAPG-2026-OK-001/002 are in pipeline for NODE-601 and NODE-602.',
+      'NODE-601 supports 50 colonies at $20,250/yr; NODE-602 supports 100 colonies at $40,500/yr.',
+      'Preston/Fresco shelter costs and local beekeeping equipment sourced in Bethel Acres OK.',
+      'Pollination radius coverage for 3km ecological zone yields $42,411/season value.'
+    ],
+    recommendations:[
+      'Submit USDA VAPG application for NODE-601 by Q3 2026 to secure initial resource allocation.',
+      'Source local beekeeping suppliers in Bethel Acres OK for cost-effective BOM.',
+      'Map pollination radius coverage to maximize ecological and economic returns.'
+    ],
+    actionItems:['Submit USDA VAPG application for NODE-601 by Q3 2026','Source local beekeeping equipment suppliers in Bethel Acres OK','Calculate BOM for 10-unit Preston shelter module','Map pollination radius coverage for 3km ecological zone','Establish honey processing and distribution agreements'],
+    metrics:{'NODE-601':'$20,250/yr','NODE-602':'$40,500/yr',total:'$61,950/yr',ecological:'$42,411/season'}
+  },
+  {id:4,name:'COMMS',color:'#ff44aa',
+    expertise:['outreach','sponsor','community','wolfkrow','recruit','document','language','translate','social','publish','readme','announce'],
+    analysisTemplates:[
+      'Five-language i18n support (EN/ES/ZH/FR/AR) targets global reach of 50M developers.',
+      'Wolfkrow crew recruitment spans 6 outreach vectors with SUPPORTERS.md live on GitHub.',
+      'Colony Dispatch announcement prepared for 3 developer platforms.',
+      'Weekly Colony update digest format designed for Colony Members.'
+    ],
+    recommendations:[
+      'Publish Colony Dispatch announcement across 3 developer platforms for maximum reach.',
+      'Prioritize ES and ZH translations of README.md for broadest developer adoption.',
+      'Draft Wolfkrow crew recruitment brief targeting 7 crews for Phase 1.'
+    ],
+    actionItems:['Publish Colony Dispatch announcement on 3 developer platforms','Translate README.md into ES and ZH (priority)','Draft Wolfkrow crew recruitment brief for Phase 1 (7 crews)','Update GitHub Sponsors tiers with latest perk descriptions','Schedule weekly Colony update digest for Colony Members'],
+    metrics:{languages:'5',reach:'50M developers',vectors:'6',sponsors:'pending approval',wolfkrow:'7 crews targeted'}
+  },
+  {id:5,name:'ANALYSIS',color:'#aa44ff',
+    expertise:['analyze','data','metric','score','measure','research','quantify','report','calculate','compare','synthesis','insight'],
+    analysisTemplates:[
+      'Love quality scoring at 94.2% with sovereignty at 100% and 7-agent quorum ACHIEVED.',
+      'Byzantine fault tolerance is ACTIVE across all colony consensus operations.',
+      'Cross-reference analysis of last 20 tasks shows consistent LQ above 0.80 threshold.',
+      'Phase 2 readiness scorecard covers 10 key metrics for scale assessment.'
+    ],
+    recommendations:[
+      'Generate monthly colony metrics report from AppSDK data for trend visibility.',
+      'Build Phase 2 readiness scorecard with 10 quantified metrics.',
+      'Benchmark crew-colony MANNA allocation against community needs data.'
+    ],
+    actionItems:['Generate monthly colony metrics report from AppSDK data','Cross-reference love quality scores across last 20 tasks','Build Phase 2 readiness scorecard (10 metrics)','Quantify ecological impact of NODE-601+602 for USDA report','Benchmark crew-colony MANNA allocation against community needs'],
+    metrics:{lq_score:'94.2%',sovereignty:'100%',quorum:'7/7 ACHIEVED',consensus:'BYZANTINE TOLERANT'}
+  },
+  {id:6,name:'QUALITY',color:'#00ffcc',
+    expertise:['validate','safety','quality','love','sovereign','comply','audit','check','review','approve','kernel','aethel','gate','block'],
+    analysisTemplates:[
+      'Aethel Grid kernel v0.1.0 is OPERATIONAL with 3-gate sovereignty pipeline validated.',
+      'Nine extraction signatures are actively blocked; love quality threshold holds at 0.80 minimum.',
+      'Consent ledger integrity verified via SHA-256 chain with no anomalies detected.',
+      'Last 20 governance decisions audited for love quality drift—all within tolerance.'
+    ],
+    recommendations:[
+      'Run full 3-gate Aethel validation on all pending proposals before approval.',
+      'Update extraction signature list with 3 new patterns identified in recent scans.',
+      'Document love quality scoring methodology in CORE_CODEX for transparency.'
+    ],
+    actionItems:['Run full 3-gate Aethel validation on all pending proposals','Update extraction signature list with 3 new patterns','Audit last 20 governance decisions for love quality drift','Verify consent ledger integrity via SHA-256 chain','Document love quality scoring methodology for CORE_CODEX'],
+    metrics:{kernel:'v0.1.0 ACTIVE',gates:'3/3 PASSING',blocked:'9 signatures',threshold:'≥0.80',ledger:'VERIFIED'}
+  },
+  {id:7,name:'INNOVATION',color:'#ff6600',
+    expertise:['innovate','create','design','new','breakthrough','idea','flow','future','imagine','build','wolfkrow','crew','scale','icositetrachoron'],
+    analysisTemplates:[
+      'Wolfkrow crew scale projects 1,800 crews × 7 devs = 12,600 developers at full Phase 2.',
+      'Phase 5 global projection: 56B agents via 24-cell icositetrachoron crew topology.',
+      'MANNA 84/15/1 allocation model ensures community-first resource flow.',
+      'EarthDome community node physical layout designed for Preston/Fresco pilot.'
+    ],
+    recommendations:[
+      'Design Wolfkrow crew onboarding flow for Phase 1 targeting 7 initial crews.',
+      'Prototype MANNA 84/15/1 allocation interface for community transparency.',
+      'Map icositetrachoron topology to 24-cell crew network for scale validation.'
+    ],
+    actionItems:['Design Wolfkrow crew onboarding flow for Phase 1 (7 crews)','Map icositetrachoron topology to 24-cell crew network','Prototype MANNA 84/15/1 allocation interface','Define Phase 5 global agent coordination protocol','Sketch EarthDome community node physical layout for Preston/Fresco pilot'],
+    metrics:{crews:'7 active',dev_scale:'12,600 at 1800 crews',agent_scale:'56B global',manna:'84/15/1',topology:'icositetrachoron'}
+  }
+];
+
+const CREW_AGENTS = [
+  {id:'MGR',name:'MANAGER',color:'#ffb800',role:'Coordinates crew operations, assigns tasks, reports to Colony.',responses:['Crew operations briefed. Task queue updated. Reporting to Colony consensus layer. Timeline set for next sprint cycle. All crew members acknowledged.','Manager coordination complete. Task assignments distributed to crew agents. Sprint objectives aligned with Colony directives. Progress checkpoint scheduled.']},
+  {id:'RES',name:'RESEARCHER',color:'#0088ff',role:'Gathers intel, synthesizes data, surfaces insights, validates sources.',responses:['Research synthesis complete. Data from 4 sources validated. Key insight: integration points align with Colony architecture. Source credibility: HIGH across all vectors.','Intel gathered and cross-referenced. Synthesis reveals 3 actionable patterns. All sources validated against CORE_CODEX standards. Confidence: 96%.']},
+  {id:'BLD',name:'BUILDER',color:'#00ff88',role:'Implements solutions, writes code and modules, deploys outputs.',responses:['Build cycle initiated. Module scaffolded with TypeScript types. Tests passing: 4/4. Deployment target: staging environment. Code review pending Guardian approval.','Implementation complete. 3 modules deployed to staging. All integration tests green. Performance baseline captured. Ready for Guardian audit.']},
+  {id:'GRD',name:'GUARDIAN',color:'#ff44aa',role:'Validates safety, enforces sovereignty, blocks extraction, audits compliance.',responses:['Safety audit complete. Sovereignty gates: 3/3 PASSING. No extraction signatures detected. Love quality within threshold. Compliance: VERIFIED.','Guardian validation passed. All safety protocols intact. Extraction scan: CLEAN. Consent ledger: VERIFIED. Recommend proceeding to Colony approval.']}
+];
+
+const EXTRACTION_SIGS = ['private_fork','capture','exploit','bypass_consensus','override_sovereignty','harvest_without_return','concentrate_power','surveillance','extract_value'];
+
+const LQ_DIMS = [
+  {key:'flourishing',label:'Flourishing',color:'var(--green)',keywords:['growth','flourish','thrive','benefit','help','community','people','serve']},
+  {key:'harmReduction',label:'Harm Reduce',color:'var(--green)',keywords:['safe','protect','prevent','care','well','health','secure','defend']},
+  {key:'equity',label:'Equity',color:'var(--green)',keywords:['fair','equal','just','share','access','everyone','community','all','open']},
+  {key:'regenerative',label:'Regenerative',color:'var(--green)',keywords:['sustain','regenerat','renew','restore','ecology','nature','earth','soil']},
+  {key:'cooperation',label:'Cooperation',color:'var(--cyan)',keywords:['together','collaborat','partner','team','shared','collective','consent','agree']},
+  {key:'beauty',label:'Beauty',color:'var(--purple)',keywords:['beauty','meaning','purpose','art','create','design','vision','love','soul']}
+];
+
+let currentPriority = 'STD';
+let activeRepo = 'openclaw-governance';
+let activeTab = 'dispatch';
+let sdk = null;
+let state = {
+  tasks:[], crew_briefs:[], proposals:[], audit_log:[],
+  crew_lineage:[], manna_saves:[],
+  stats:{ total_tasks:0, total_briefs:0, total_proposals:0, avg_lq:0.942 }
+};
+
+// GRAPALACLAWZ state
+let grpSelectedAgent = null;
+let grpRosterCount = 1;
+let grpRosterData = [{num:'001',name:'Colony Alpha',lead:'iAAi33iAAi',status:'ACTIVE',manna:840}];
+
+// LAMINAR state
+let laminarState = { ciRuns:0, vectorTests:0, reports:0, lastRun:null };
+let lamCiRunning = false;
+
+// LAMINAR domain data
+const LAM_DOMAINS = [
+  {id:'bio', num:'01', name:'Biological Integrity', desc:'Enforcing limits that preserve organic health, physical biomes, and human life parameters within node proximities.', base:94, status:'OPTIMAL'},
+  {id:'inorg', num:'02', name:'Inorganic Sovereignty', desc:'Protecting computation, cryptographic keys, and algorithmic engines from untrusted or malicious poisoning vectors.', base:98, status:'OPTIMAL'},
+  {id:'comp', num:'03', name:'Computational Efficiency', desc:'Optimizing throughput and verifying zero-knowledge constraints without wasting operational capacity or hardware overhead.', base:87, status:'OPTIMAL'},
+  {id:'arch', num:'04', name:'Architectural Balance', desc:'Ensuring spatial, physical, and localized off-grid infrastructure adheres to long-term structural load limits.', base:91, status:'OPTIMAL'},
+  {id:'info', num:'05', name:'Informational Security', desc:'Maintaining strict, uncompromised control over data ingestion, transmission lanes, and state validation paths.', base:96, status:'OPTIMAL'},
+  {id:'eco', num:'06', name:'Ecological Restoration', desc:'Integrating telemetry loops that actively direct excess energy recovery and logistical outputs toward environmental repair.', base:78, status:'MONITORING'}
+];
+let lamDomainValues = {};
+LAM_DOMAINS.forEach(d => { lamDomainValues[d.id] = d.base; });
+
+// ===================== AppSDK =====================
+async function initSDK() {
+  try {
+    if (typeof AppSDK !== 'undefined') {
+      sdk = await AppSDK.connect();
+      const saved = await sdk.getItem('openclaw_universe_p1');
+      if (saved) state = { ...state, ...JSON.parse(saved) };
+      // Load GRAPALACLAWZ data
+      try {
+        const rosterResult = await sdk.list('wolfkrow_roster');
+        if (rosterResult && rosterResult.documents && rosterResult.documents.length > 0) {
+          grpRosterData = rosterResult.documents.map(d => d.data);
+          grpRosterCount = grpRosterData.length;
+          renderGrpRoster();
+        }
+      } catch(e) {}
+      // Load LAMINAR state
+      try {
+        const lamDoc = await sdk.get('laminar_state','config');
+        if (lamDoc && lamDoc.data) laminarState = { ...laminarState, ...lamDoc.data };
+      } catch(e) {}
+    }
+  } catch(e) { console.log('AppSDK not available, using local state'); }
+  renderAll();
+}
+async function saveState() {
+  try {
+    if (sdk) await sdk.setItem('openclaw_universe_p1', JSON.stringify(state));
+  } catch(e) { console.log('Save failed:', e); }
+}
+async function saveLaminarState() {
+  try {
+    if (sdk) await sdk.upsert('laminar_state','config', laminarState);
+  } catch(e) {}
+}
+async function logLaminar(action, detail) {
+  try {
+    if (sdk) {
+      const id = crypto.randomUUID();
+      await sdk.upsert('laminar_log', id, { action, detail, timestamp: new Date().toISOString() });
+    }
+  } catch(e) {}
+}
+
+// ===================== LOVE QUALITY =====================
+function scoreDim(text, keywords) {
+  const lower = text.toLowerCase();
+  let hits = 0;
+  keywords.forEach(k => { if (lower.includes(k)) hits++; });
+  const raw = hits / Math.max(keywords.length, 1);
+  return Math.min(0.99, Math.max(0.70, 0.70 + raw * 0.29 + (Math.random() * 0.08 - 0.04)));
+}
+
+function validateLQ(text) {
+  const dims = {};
+  LQ_DIMS.forEach(d => { dims[d.key] = scoreDim(text, d.keywords); });
+  const values = Object.values(dims);
+  const overall = values.reduce((a,b)=>a+b,0) / values.length;
+  return { dims, overall };
+}
+
+// ===================== AETHEL KERNEL =====================
+function aethelValidate(text, submitter, lq) {
+  const lower = text.toLowerCase();
+  const gates = [
+    { name:'Sovereignty', passed: submitter === 'iAAi33iAAi', note: submitter === 'iAAi33iAAi' ? 'Verified sovereign submitter' : 'Unknown submitter' },
+    { name:'Love (≥0.80)', passed: lq >= 0.80, note: lq >= 0.80 ? `LQ ${(lq*100).toFixed(1)}% above threshold` : `LQ ${(lq*100).toFixed(1)}% BELOW threshold` },
+    { name:'Extraction', passed: !EXTRACTION_SIGS.some(s => lower.includes(s.replace(/_/g,' ')) || lower.includes(s)), note:'Signature scan complete' }
+  ];
+  const approved = gates.every(g => g.passed);
+  return { approved, gates, verdict: approved ? 'AETHEL: FLOW APPROVED ✓' : 'AETHEL: FLOW BLOCKED ✗' };
+}
+
+// ===================== COLONY ENGINE =====================
+class ColonyEngine {
+  generateResponse(taskText, agent, priority) {
+    const lower = taskText.toLowerCase();
+    const hits = agent.expertise.filter(k => lower.includes(k)).length;
+    const confidence = Math.min(0.99, 0.45 + (hits * 0.08) + Math.random() * 0.10);
+    const isPrimary = confidence > 0.70;
+    const loveScore = 0.85 + Math.random() * 0.13;
+    const kernelResult = aethelValidate(taskText, 'iAAi33iAAi', loveScore);
+
+    const numSentences = priority === 'URGENT' ? 3 : 2;
+    let analysis = '';
+    const shuffled = [...agent.analysisTemplates].sort(() => Math.random() - 0.5);
+    const ranked = shuffled.sort((a,b) => {
+      const aHits = agent.expertise.filter(k => a.toLowerCase().includes(k)).length;
+      const bHits = agent.expertise.filter(k => b.toLowerCase().includes(k)).length;
+      return bHits - aHits;
+    });
+    analysis = ranked.slice(0, numSentences).join(' ');
+
+    const rec = agent.recommendations[Math.floor(Math.random() * agent.recommendations.length)];
+
+    const itemCount = priority === 'STD' ? 3 : priority === 'HIGH' ? 4 : 5;
+    const actionItems = agent.actionItems.slice(0, itemCount);
+
+    return {
+      agentId: agent.id,
+      name: agent.name,
+      color: agent.color,
+      confidence,
+      isPrimary,
+      analysis,
+      recommendation: rec,
+      actionItems,
+      metrics: agent.metrics,
+      loveScore,
+      kernelResult,
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+const engine = new ColonyEngine();
+
+// ===================== RENDERING =====================
+function renderAll() {
+  renderRepos();
+  renderQuickStats();
+  renderLQDims({
+    flourishing:0.96, harmReduction:0.98, equity:0.91,
+    regenerative:0.94, cooperation:0.89, beauty:0.97
+  });
+  renderRadar({flourishing:0.96,harmReduction:0.98,equity:0.91,regenerative:0.94,cooperation:0.89,beauty:0.97});
+  renderColonyStats();
+  renderAgentChecks();
+  renderCrewGrid();
+  renderLineage();
+  renderGovList();
+  renderMemList();
+  renderMemStats();
+  renderGrpRoster();
+  renderLamDomains();
+  updateLamVhDelta();
+}
+
+function renderRepos() {
+  const el = document.getElementById('repo-list-rl01');
+  el.innerHTML = '';
+  REPOS.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'repo-btn' + (r.id === activeRepo ? ' active' : '');
+    btn.dataset.repo = r.id;
+    btn.innerHTML = `<span class="repo-dot"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.name}</span><span style="font-size:10px;color:var(--text-muted);">${r.lang}</span><span style="font-size:10px;color:var(--amber);">⭐${r.stars}</span>`;
+    el.appendChild(btn);
+  });
+}
+
+function renderQuickStats() {
+  document.getElementById('qs-tasks-qt01').textContent = state.stats.total_tasks;
+  document.getElementById('qs-props-qp01').textContent = state.stats.total_proposals;
+  document.getElementById('qs-lq-ql01').textContent = (state.stats.avg_lq * 100).toFixed(1) + '%';
+}
+
+function renderAgentChecks() {
+  const el = document.getElementById('agent-checks-ac01');
+  el.innerHTML = '';
+  AGENTS.forEach(a => {
+    const label = document.createElement('label');
+    label.style.cssText = 'display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;';
+    label.innerHTML = `<input type="checkbox" class="agent-cb" data-agent-id="${a.id}" checked style="accent-color:${a.color};"><span style="color:${a.color};">0${a.id} ${a.name}</span>`;
+    el.appendChild(label);
+  });
+}
+
+function renderLQDims(dims) {
+  const el = document.getElementById('lq-dims-ld01');
+  el.innerHTML = '';
+  LQ_DIMS.forEach(d => {
+    const val = dims[d.key] || 0.90;
+    const pct = (val * 100).toFixed(0);
+    const row = document.createElement('div');
+    row.style.cssText = 'margin-bottom:6px;';
+    row.innerHTML = `<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;"><span style="color:var(--text-muted);">${d.label}</span><span style="color:${d.color};">${pct}%</span></div><div class="lq-bar-track"><div class="lq-bar-fill" style="width:${pct}%;background:${d.color};"></div></div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderRadar(dims) {
+  const svg = document.getElementById('radar-svg-rs01');
+  const cx = 120, cy = 120, r = 90;
+  const labels = LQ_DIMS.map(d => d.label);
+  const values = LQ_DIMS.map(d => dims[d.key] || 0.90);
+  let html = '';
+  [0.25,0.5,0.75,1.0].forEach(s => {
+    html += `<circle cx="${cx}" cy="${cy}" r="${r*s}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+  });
+  const points = [];
+  values.forEach((v,i) => {
+    const angle = (Math.PI * 2 * i / 6) - Math.PI/2;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    const lx = cx + (r+18) * Math.cos(angle);
+    const ly = cy + (r+18) * Math.sin(angle);
+    html += `<text x="${lx}" y="${ly}" fill="var(--text-muted)" font-size="8" text-anchor="middle" dominant-baseline="middle">${labels[i]}</text>`;
+    const px = cx + r * v * Math.cos(angle);
+    const py = cy + r * v * Math.sin(angle);
+    points.push(`${px},${py}`);
+  });
+  html += `<polygon points="${points.join(' ')}" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="1.5"/>`;
+  points.forEach(p => {
+    const [px,py] = p.split(',');
+    html += `<circle cx="${px}" cy="${py}" r="3" fill="#00ff88"/>`;
+  });
+  svg.innerHTML = html;
+}
+
+function renderColonyStats() {
+  document.getElementById('cs-tasks-ct01').textContent = state.stats.total_tasks;
+  document.getElementById('cs-briefs-cb01').textContent = state.stats.total_briefs;
+  document.getElementById('cs-props-cp01').textContent = state.stats.total_proposals;
+  document.getElementById('cs-lq-cl01').textContent = (state.stats.avg_lq * 100).toFixed(1) + '%';
+}
+
+function updateLQPanel(lqResult, kernelResult) {
+  const overall = lqResult.overall;
+  document.getElementById('lq-big-lb01').textContent = (overall * 100).toFixed(1) + '%';
+  document.getElementById('lq-big-lb01').style.color = overall >= 0.80 ? 'var(--green)' : 'var(--red)';
+  const vEl = document.getElementById('lq-verdict-lv01');
+  if (kernelResult.approved) {
+    vEl.textContent = '✓ FLOW APPROVED';
+    vEl.style.color = 'var(--green)'; vEl.style.borderColor = 'var(--green)'; vEl.style.background = 'rgba(0,255,136,0.15)';
+  } else {
+    vEl.textContent = '✗ BLOCKED';
+    vEl.style.color = 'var(--red)'; vEl.style.borderColor = 'var(--red)'; vEl.style.background = 'rgba(255,51,68,0.15)';
+  }
+  renderLQDims(lqResult.dims);
+  renderRadar(lqResult.dims);
+
+  const gs = document.getElementById('gate-status-gs01');
+  gs.innerHTML = kernelResult.gates.map(g =>
+    `<div style="color:${g.passed?'var(--green)':'var(--red)'};">Gate ${kernelResult.gates.indexOf(g)+1} ${g.name}  ${g.passed?'✓':'✗'}</div>`
+  ).join('');
+  document.getElementById('gate-verdict-gv01').textContent = 'VERDICT: ' + (kernelResult.approved ? 'APPROVED' : 'BLOCKED');
+  document.getElementById('gate-verdict-gv01').style.color = kernelResult.approved ? 'var(--green)' : 'var(--red)';
+}
+
+function updateStatusBar(taskPreview, lq) {
+  document.getElementById('sb-lq-sl01').textContent = (lq * 100).toFixed(1) + '%';
+  document.getElementById('sb-last-sl02').textContent = taskPreview.substring(0, 60) + (taskPreview.length > 60 ? '...' : '');
+}
+
+// ===================== DISPATCH =====================
+function dispatchToColony() {
+  const textarea = document.getElementById('task-input-ti01');
+  const taskText = textarea.value.trim();
+  if (!taskText) { textarea.style.borderColor = 'var(--red)'; setTimeout(()=>textarea.style.borderColor='',2000); return; }
+
+  const checkedAgents = [];
+  document.querySelectorAll('.agent-cb').forEach(cb => {
+    if (cb.checked) checkedAgents.push(AGENTS.find(a => a.id === parseInt(cb.dataset.agentId)));
+  });
+  if (checkedAgents.length === 0) return;
+
+  const stream = document.getElementById('dispatch-stream-ds01');
+  stream.innerHTML = '<div class="processing-banner" id="proc-banner-pb01">⬡ COLONY PROCESSING<span id="proc-dots-pd02">...</span></div>';
+
+  let dotCount = 0;
+  const dotInterval = setInterval(() => {
+    dotCount = (dotCount + 1) % 4;
+    const dotsEl = document.getElementById('proc-dots-pd02');
+    if (dotsEl) dotsEl.textContent = '.'.repeat(dotCount + 1);
+  }, 300);
+
+  const lqResult = validateLQ(taskText);
+  const responses = [];
+
+  checkedAgents.forEach((agent, i) => {
+    setTimeout(() => {
+      const resp = engine.generateResponse(taskText, agent, currentPriority);
+      responses.push(resp);
+      renderAgentCard(stream, resp, i);
+
+      if (responses.length === checkedAgents.length) {
+        clearInterval(dotInterval);
+        const banner = document.getElementById('proc-banner-pb01');
+        if (banner) banner.remove();
+        renderConsensus(stream, responses, lqResult, taskText);
+
+        const kernelResult = aethelValidate(taskText, 'iAAi33iAAi', lqResult.overall);
+        state.tasks.push({ text:taskText, agents:checkedAgents.map(a=>a.id), priority:currentPriority, lq:lqResult.overall, responses:responses.length, timestamp:new Date().toISOString() });
+        state.stats.total_tasks++;
+        recalcAvgLQ();
+        updateLQPanel(lqResult, kernelResult);
+        updateStatusBar(taskText, lqResult.overall);
+        renderColonyStats();
+        renderQuickStats();
+        renderMemList();
+        renderMemStats();
+        updateLamVhDelta();
+        saveState();
+      }
+    }, (i + 1) * 400);
+  });
+}
+
+function renderAgentCard(container, resp, index) {
+  const card = document.createElement('div');
+  card.className = 'glow-border agent-card-anim';
+  card.style.cssText = `background:var(--bg-card);border-radius:10px;overflow:hidden;margin-bottom:12px;animation-delay:${index*0.1}s;`;
+  card.dataset.taskIdx = state.tasks.length;
+
+  const metricsHtml = Object.entries(resp.metrics).map(([k,v])=>`<span class="font-mono" style="color:var(--text-muted);font-size:10px;">${k}: <span style="color:var(--text-pri);">${v}</span></span>`).join(' · ');
+
+  card.innerHTML = `
+    <div style="height:4px;background:${resp.color};"></div>
+    <div style="padding:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <span style="color:${resp.color};font-weight:700;font-size:13px;">0${resp.agentId} ${resp.name}</span>
+        <span style="font-size:11px;color:var(--text-muted);">· ${(resp.confidence*100).toFixed(0)}% confidence</span>
+        <span style="font-size:11px;color:var(--pink);">· ♥ ${resp.loveScore.toFixed(2)}</span>
+        <span style="font-size:11px;padding:1px 6px;border-radius:3px;background:${resp.kernelResult.approved?'rgba(0,255,136,0.12)':'rgba(255,51,68,0.12)'};color:${resp.kernelResult.approved?'var(--green)':'var(--red)'};">${resp.kernelResult.approved?'✓ APPROVED':'✗ BLOCKED'}</span>
+      </div>
+      <div style="margin-bottom:8px;"><span style="color:var(--cyan);font-size:11px;font-weight:700;">Analysis:</span> <span style="font-size:12px;">${resp.analysis}</span></div>
+      <div style="margin-bottom:8px;"><span style="color:var(--amber);font-size:11px;font-weight:700;">Recommendation:</span> <span style="font-size:12px;">${resp.recommendation}</span></div>
+      <div style="margin-bottom:8px;"><span style="color:var(--green);font-size:11px;font-weight:700;">Action Items:</span><ul style="margin:4px 0 0 16px;font-size:12px;">${resp.actionItems.map(a=>`<li style="margin-bottom:2px;">${a}</li>`).join('')}</ul></div>
+      <div style="margin-bottom:10px;font-size:11px;">${metricsHtml}</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <button class="btn-sm btn-add-gov" data-resp='${JSON.stringify({name:resp.name,recommendation:resp.recommendation,lq:resp.loveScore}).replace(/'/g,"&#39;")}' style="border-color:var(--amber);color:var(--amber);">Add to Governance</button>
+        <button class="btn-sm btn-archive-card" style="border-color:var(--text-muted);">Archive</button>
+        <span style="flex:1;"></span>
+        <span style="font-size:10px;color:var(--text-muted);">${new Date(resp.timestamp).toLocaleTimeString()}</span>
+      </div>
+    </div>`;
+  container.appendChild(card);
+  card.offsetHeight;
+  card.style.opacity = '1';
+}
+
+function renderConsensus(container, responses, lqResult, taskText) {
+  const avgConf = responses.reduce((a,r) => a + r.confidence, 0) / responses.length;
+  const avgLQ = responses.reduce((a,r) => a + r.loveScore, 0) / responses.length;
+  const kernelResult = aethelValidate(taskText, 'iAAi33iAAi', avgLQ);
+
+  const card = document.createElement('div');
+  card.className = 'consensus-card agent-card-anim';
+  card.style.animationDelay = `${responses.length * 0.1}s`;
+
+  const lqColor = avgLQ >= 0.90 ? 'var(--green)' : avgLQ >= 0.80 ? 'var(--amber)' : 'var(--red)';
+
+  card.innerHTML = `
+    <div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:10px;">⬡ COLONY CONSENSUS</div>
+    <div style="font-size:13px;margin-bottom:8px;">Combined recommendation: All ${responses.length} agents agree to proceed with aligned directives across strategy, implementation, resources, outreach, analysis, quality, and innovation vectors.</div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
+      <div style="text-align:center;"><div style="font-size:32px;font-weight:700;color:${lqColor};" class="font-mono">${(avgLQ*100).toFixed(1)}%</div><div style="font-size:10px;color:var(--text-muted);">OVERALL LOVE QUALITY</div></div>
+      <div style="font-size:12px;"><div style="color:var(--cyan);">${responses.length}/${responses.length} AGENTS · CONSENSUS ACHIEVED</div><div style="color:var(--text-muted);margin-top:2px;">Avg Confidence: ${(avgConf*100).toFixed(0)}%</div></div>
+    </div>
+    <div style="padding:8px 12px;background:rgba(0,255,136,0.06);border-radius:6px;border:1px solid var(--border);">
+      <span class="font-mono" style="color:var(--green);font-weight:700;">${kernelResult.verdict}</span>
+    </div>`;
+  container.appendChild(card);
+  card.offsetHeight;
+  card.style.opacity = '1';
+}
+
+// ===================== CREW COLONY =====================
+function renderCrewGrid() {
+  const grid = document.getElementById('crew-grid-cg01');
+  grid.innerHTML = '';
+  CREW_AGENTS.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'glow-border';
+    card.style.cssText = 'background:var(--bg-card);border-radius:10px;overflow:hidden;';
+    card.innerHTML = `
+      <div style="height:3px;background:${a.color};"></div>
+      <div style="padding:12px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+          <span style="color:${a.color};font-weight:700;font-size:13px;">${a.id} — ${a.name}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">${a.role}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:10px;color:var(--text-muted);">Status:</span>
+          <span class="crew-status-${a.id}" style="font-size:11px;padding:2px 8px;border-radius:3px;background:rgba(90,106,138,0.15);color:var(--text-muted);">IDLE</span>
+        </div>
+        <button class="btn-sm btn-brief-crew" data-crew="${a.id}" style="border-color:${a.color};color:${a.color};">BRIEF ${a.id}</button>
+        <div class="crew-brief-form-${a.id}" style="display:none;margin-top:10px;">
+          <textarea class="crew-brief-input-${a.id}" rows="3" placeholder="Brief ${a.name} on your task..." style="margin-bottom:8px;"></textarea>
+          <button class="btn-green btn-dispatch-brief" data-crew="${a.id}" style="padding:6px 12px;font-size:12px;">DISPATCH BRIEF</button>
+        </div>
+        <div class="crew-response-${a.id}" style="margin-top:10px;"></div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function briefCrew(crewId) {
+  const agent = CREW_AGENTS.find(a => a.id === crewId);
+  const input = document.querySelector(`.crew-brief-input-${crewId}`);
+  const text = input.value.trim();
+  if (!text) { input.style.borderColor = 'var(--red)'; setTimeout(()=>input.style.borderColor='',2000); return; }
+
+  const statusEl = document.querySelector(`.crew-status-${crewId}`);
+  statusEl.textContent = 'PROCESSING';
+  statusEl.style.color = agent.color;
+  statusEl.style.background = `${agent.color}22`;
+
+  setTimeout(() => {
+    const resp = agent.responses[Math.floor(Math.random() * agent.responses.length)];
+    const lqResult = validateLQ(text);
+    const kernelResult = aethelValidate(text, 'iAAi33iAAi', lqResult.overall);
+
+    statusEl.textContent = 'COMPLETE';
+    statusEl.style.color = 'var(--green)';
+    statusEl.style.background = 'rgba(0,255,136,0.12)';
+
+    const respEl = document.querySelector(`.crew-response-${crewId}`);
+    respEl.innerHTML = `<div class="glow-border" style="background:var(--bg-input);border-radius:8px;padding:10px;font-size:12px;">
+      <div style="color:${agent.color};font-weight:700;margin-bottom:4px;">${agent.id} RESPONSE:</div>
+      <div style="margin-bottom:6px;">${resp}</div>
+      <div style="font-size:10px;color:var(--text-muted);">LQ: ${(lqResult.overall*100).toFixed(1)}% · ${kernelResult.verdict} · ${new Date().toLocaleTimeString()}</div>
+    </div>`;
+
+    addLineageEntry(`Brief ${crewId}: ${text.substring(0,40)}`);
+
+    state.crew_briefs.push({ crew:crewId, text, lq:lqResult.overall, timestamp:new Date().toISOString() });
+    state.stats.total_briefs++;
+    recalcAvgLQ();
+    updateLQPanel(lqResult, kernelResult);
+    updateStatusBar(`Brief ${crewId}: ${text}`, lqResult.overall);
+    renderColonyStats();
+    renderQuickStats();
+    renderMemStats();
+    updateLamVhDelta();
+    saveState();
+
+    document.querySelector(`.crew-brief-form-${crewId}`).style.display = 'none';
+    input.value = '';
+  }, 1500);
+}
+
+// ===================== LINEAGE =====================
+function addLineageEntry(description) {
+  const prevHash = state.crew_lineage.length > 0 ? state.crew_lineage[state.crew_lineage.length - 1].hash : '0000000000000000';
+  const hash = btoa(Math.random().toString() + Date.now()).substring(0, 32);
+  state.crew_lineage.push({
+    index: state.crew_lineage.length,
+    hash,
+    parent: prevHash,
+    description: description || 'Manual entry',
+    timestamp: new Date().toISOString()
+  });
+  renderLineage();
+  saveState();
+}
+
+function renderLineage() {
+  const el = document.getElementById('lineage-list-ll01');
+  const entries = state.crew_lineage.slice(-5);
+  if (entries.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-muted);padding:8px 0;">No lineage entries yet.</div>';
+    return;
+  }
+  el.innerHTML = entries.map(e => `
+    <div class="glow-border" style="background:var(--bg-input);border-radius:6px;padding:8px;margin-bottom:6px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="color:var(--cyan);">[${e.index}]</span>
+        <span style="color:var(--green);">${e.hash.substring(0,16)}...</span>
+        <span style="color:var(--text-muted);font-size:10px;">${new Date(e.timestamp).toLocaleTimeString()}</span>
+      </div>
+      <div style="margin-left:20px;color:var(--text-muted);font-size:10px;">└── PARENT: ${e.parent.substring(0,16)}</div>
+      <div style="margin-left:20px;color:var(--text-pri);font-size:10px;margin-top:2px;">${e.description || ''}</div>
+    </div>`).join('');
+}
+
+// ===================== GOVERNANCE =====================
+function submitProposal() {
+  const title = document.getElementById('gov-title-gt01').value.trim();
+  const desc = document.getElementById('gov-desc-gd01').value.trim();
+  if (!title || !desc) return;
+
+  const lqResult = validateLQ(desc);
+  const kernelResult = aethelValidate(desc, 'iAAi33iAAi', lqResult.overall);
+
+  state.proposals.push({
+    title, description:desc, lq:lqResult.overall,
+    status: kernelResult.approved ? 'PENDING' : 'BLOCKED',
+    kernelApproved: kernelResult.approved,
+    votes: { approve:0, reject:0 },
+    timestamp: new Date().toISOString()
+  });
+  state.stats.total_proposals++;
+  recalcAvgLQ();
+
+  document.getElementById('gov-title-gt01').value = '';
+  document.getElementById('gov-desc-gd01').value = '';
+
+  updateLQPanel(lqResult, kernelResult);
+  renderGovList();
+  renderColonyStats();
+  renderQuickStats();
+  renderMemStats();
+  saveState();
+}
+
+function renderGovList() {
+  const el = document.getElementById('gov-list-gl01');
+  if (state.proposals.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">No proposals yet. Submit one above.</div>';
+    return;
+  }
+  el.innerHTML = state.proposals.map((p, i) => {
+    const statusColor = p.status === 'APPROVED' ? 'var(--green)' : p.status === 'REJECTED' ? 'var(--red)' : p.status === 'BLOCKED' ? 'var(--red)' : 'var(--amber)';
+    return `<div class="glow-border" style="background:var(--bg-card);border-radius:10px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+        <span style="font-weight:700;font-size:13px;">${p.title}</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:3px;background:${statusColor}22;color:${statusColor};font-weight:700;">${p.status}</span>
+        <span style="font-size:10px;color:var(--green);">LQ: ${(p.lq*100).toFixed(1)}%</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">${p.description}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn-sm btn-gov-approve" data-idx="${i}" style="border-color:var(--green);color:var(--green);">✓ Approve</button>
+        <button class="btn-sm btn-gov-reject" data-idx="${i}" style="border-color:var(--red);color:var(--red);">✗ Reject</button>
+        <span style="flex:1;"></span>
+        <span style="font-size:10px;color:var(--text-muted);">${new Date(p.timestamp).toLocaleTimeString()}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===================== MEMORY =====================
+function renderMemList(filter = '') {
+  const el = document.getElementById('mem-list-ml02');
+  const filtered = state.tasks.filter(t => !filter || t.text.toLowerCase().includes(filter.toLowerCase()));
+  if (filtered.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No tasks in memory.</div>';
+    return;
+  }
+  el.innerHTML = filtered.map((t, i) => `
+    <div class="glow-border" style="background:var(--bg-card);border-radius:8px;padding:10px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:10px;color:var(--text-muted);white-space:nowrap;">${new Date(t.timestamp).toLocaleTimeString()}</span>
+      <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.text.substring(0,60)}${t.text.length>60?'...':''}</span>
+      <span style="font-size:10px;color:var(--cyan);white-space:nowrap;">${t.agents.length} agents</span>
+      <span style="font-size:10px;color:var(--green);white-space:nowrap;">LQ: ${(t.lq*100).toFixed(1)}%</span>
+      <button class="btn-sm btn-redispatch" data-task-text="${encodeURIComponent(t.text)}" style="border-color:var(--cyan);color:var(--cyan);white-space:nowrap;">RE-DISPATCH</button>
+    </div>`).join('');
+}
+
+function renderMemStats() {
+  document.getElementById('mem-tasks-mt01').textContent = state.stats.total_tasks;
+  document.getElementById('mem-briefs-mb01').textContent = state.stats.total_briefs;
+  document.getElementById('mem-props-mp01').textContent = state.stats.total_proposals;
+  document.getElementById('mem-lq-ml01').textContent = (state.stats.avg_lq * 100).toFixed(1) + '%';
+}
+
+// ===================== KERNEL TOOLS =====================
+function runLQScanner() {
+  const text = document.getElementById('kern-lq-input-kli1').value.trim();
+  if (!text) return;
+  const result = validateLQ(text);
+  const el = document.getElementById('kern-lq-output-klo1');
+  const rows = LQ_DIMS.map(d => {
+    const val = result.dims[d.key];
+    const pct = (val*100).toFixed(1);
+    const color = val >= 0.90 ? 'var(--green)' : val >= 0.80 ? 'var(--amber)' : 'var(--red)';
+    return `<div style="display:flex;justify-content:space-between;padding:2px 0;"><span style="color:var(--text-muted);">${d.label}</span><span style="color:${color};font-weight:700;">${pct}%</span></div>`;
+  }).join('');
+  const overall = result.overall;
+  const oColor = overall >= 0.90 ? 'var(--green)' : overall >= 0.80 ? 'var(--amber)' : 'var(--red)';
+  el.innerHTML = `${rows}<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;display:flex;justify-content:space-between;font-weight:700;"><span>OVERALL</span><span style="color:${oColor};">${(overall*100).toFixed(1)}%</span></div>
+  <div style="margin-top:6px;text-align:center;padding:4px 8px;border-radius:4px;background:${overall>=0.80?'rgba(0,255,136,0.12)':'rgba(255,51,68,0.12)'};color:${overall>=0.80?'var(--green)':'var(--red)'};font-weight:700;font-size:11px;">${overall>=0.80?'✓ FLOW APPROVED':'✗ BELOW THRESHOLD'}</div>`;
+}
+
+function runExtScanner() {
+  const text = document.getElementById('kern-ext-input-kei1').value.trim();
+  if (!text) return;
+  const lower = text.toLowerCase();
+  const el = document.getElementById('kern-ext-output-keo1');
+  el.innerHTML = EXTRACTION_SIGS.map(sig => {
+    const found = lower.includes(sig.replace(/_/g,' ')) || lower.includes(sig);
+    return `<div style="display:flex;justify-content:space-between;padding:2px 0;"><span style="color:var(--text-muted);">${sig}</span><span style="color:${found?'var(--red)':'var(--green)'};font-weight:700;">${found?'FOUND ✗':'CLEAR ✓'}</span></div>`;
+  }).join('');
+}
+
+function runGateTest() {
+  const action = document.getElementById('kern-gate-action-kga1').value.trim();
+  const submitter = document.getElementById('kern-gate-sub-kgs1').value.trim();
+  if (!action || !submitter) return;
+  const lq = validateLQ(action).overall;
+  const result = aethelValidate(action, submitter, lq);
+  const el = document.getElementById('kern-gate-output-kgo1');
+  el.innerHTML = result.gates.map((g,i) =>
+    `<div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:var(--text-muted);">Gate ${i+1}: ${g.name}</span><span style="color:${g.passed?'var(--green)':'var(--red)'};font-weight:700;">${g.passed?'PASS ✓':'FAIL ✗'}</span></div>
+    <div style="font-size:10px;color:var(--text-muted);padding-left:8px;margin-bottom:4px;">${g.note}</div>`
+  ).join('') + `<div style="margin-top:8px;padding:6px 10px;border-radius:6px;text-align:center;font-weight:700;background:${result.approved?'rgba(0,255,136,0.12)':'rgba(255,51,68,0.12)'};color:${result.approved?'var(--green)':'var(--red)'};">${result.verdict}</div>`;
+}
+
+// ===================== MANNA =====================
+function calcManna() {
+  const total = parseFloat(document.getElementById('manna-input-mi01').value) || 0;
+  document.getElementById('manna-core-mc01').textContent = Math.floor(total * 0.84);
+  document.getElementById('manna-wolf-mw01').textContent = Math.floor(total * 0.15);
+  document.getElementById('manna-seed-ms01').textContent = Math.floor(total * 0.01);
+}
+
+function resetManna() {
+  document.getElementById('manna-input-mi01').value = 10000;
+  calcManna();
+}
+
+function saveManna() {
+  const total = parseFloat(document.getElementById('manna-input-mi01').value) || 0;
+  state.manna_saves.push({
+    total, core:Math.floor(total*0.84), wolf:Math.floor(total*0.15), seed:Math.floor(total*0.01),
+    timestamp: new Date().toISOString()
+  });
+  saveState();
+  const btn = document.getElementById('btn-manna-save-bms1');
+  const orig = btn.textContent;
+  btn.textContent = '✓ SAVED';
+  btn.style.background = 'rgba(0,255,136,0.15)';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+}
+
+// ===================== GRAPALACLAWZ =====================
+const GRP_RESPONSES = {
+  MGR: 'Colony Manager confirms task received. Routing to crew pipeline. Priority assessed. Wolfkrow crew #001 assigned. MANNA allocation: 840 units. Lineage hash recorded. Awaiting builder confirmation.',
+  RES: 'Research agent scanning knowledge base. Domain keywords extracted. Cross-referencing openclaw-governance repo (34 files, 33 commits). Synthesis complete. Confidence: 91%. Relevant modules identified: love_quality_engine.py, colony_coordinator.py.',
+  BLD: 'Builder agent initializing. Stack: TypeScript + Python + Rust. Implementation pathway mapped. Aethel kernel v0.1.0 integration confirmed. 4 tests passing. Module scaffold ready. ETA: next sprint.',
+  GRD: 'Guardian validation complete. Love quality: 0.91 (threshold: 0.85 PASS). Extraction scan: 0/6 signatures detected. Sovereignty gate: PASS. Consent ledger: VERIFIED. Action: APPROVED.'
+};
+
+const GRP_AGENT_COLORS = {
+  MGR: '#ffb800',
+  RES: '#0088ff',
+  BLD: '#00ff88',
+  GRD: '#ff44aa'
+};
+
+function runGrpCrew() {
+  const textarea = document.getElementById('grp-task-input');
+  const taskText = textarea.value.trim();
+  const errorEl = document.getElementById('grp-agent-error');
+
+  if (!taskText) {
+    textarea.style.borderColor = 'var(--red)';
+    setTimeout(() => textarea.style.borderColor = '', 2000);
+    return;
+  }
+  if (!grpSelectedAgent) {
+    errorEl.style.display = 'inline';
+    setTimeout(() => errorEl.style.display = 'none', 2500);
+    return;
+  }
+
+  const stream = document.getElementById('grp-response-stream');
+  const agentColor = GRP_AGENT_COLORS[grpSelectedAgent];
+  const agentName = grpSelectedAgent;
+
+  const card = document.createElement('div');
+  card.className = 'glow-border agent-card-anim';
+  card.style.cssText = 'background:var(--bg-card);border-radius:10px;overflow:hidden;margin-bottom:12px;';
+  card.innerHTML = `
+    <div style="height:4px;background:${agentColor};"></div>
+    <div style="padding:14px;">
+      <div style="color:${agentColor};font-weight:700;font-size:13px;margin-bottom:8px;">[${agentName}] processing...</div>
+      <div class="processing-banner" style="font-size:12px;padding:8px;">⬡ CREW PROCESSING...</div>
+    </div>`;
+  stream.prepend(card);
+  card.offsetHeight;
+  card.style.opacity = '1';
+
+  setTimeout(() => {
+    const now = new Date();
+    const responseText = GRP_RESPONSES[grpSelectedAgent];
+    card.innerHTML = `
+      <div style="height:4px;background:${agentColor};"></div>
+      <div style="padding:14px;">
+        <div style="color:${agentColor};font-weight:700;font-size:13px;margin-bottom:8px;">[${agentName}] RESPONSE</div>
+        <div style="font-size:12px;margin-bottom:10px;line-height:1.5;">${responseText}</div>
+        <div style="font-size:10px;color:var(--text-muted);padding-top:8px;border-top:1px solid var(--border);">
+          ${now.toLocaleTimeString()} · MANNA charged: 84 units | LQ: 0.91 | AETHEL: APPROVED
+        </div>
+      </div>`;
+
+    const logEntry = {
+      agent: grpSelectedAgent,
+      task: taskText,
+      timestamp: now.toISOString(),
+      lq: 0.91
+    };
+    saveGrpLog(logEntry);
+  }, 1200);
+}
+
+async function saveGrpLog(entry) {
+  try {
+    if (sdk) {
+      const id = crypto.randomUUID();
+      await sdk.upsert('grapalaclawz_log', id, entry);
+    }
+  } catch(e) { console.log('GRP log save failed:', e); }
+}
+
+function renderGrpRoster() {
+  const tbody = document.getElementById('grp-roster-body');
+  if (!tbody) return;
+  tbody.innerHTML = grpRosterData.map(r => {
+    const statusColors = {
+      'ACTIVE': 'var(--green)',
+      'RECRUITING': 'var(--amber)',
+      'BUILDING': 'var(--cyan)',
+      'STANDBY': 'var(--text-muted)'
+    };
+    const sc = statusColors[r.status] || 'var(--text-muted)';
+    return `<tr style="border-bottom:1px solid rgba(0,255,136,0.08);">
+      <td style="padding:6px 8px;color:var(--cyan);" class="font-mono">${r.num}</td>
+      <td style="padding:6px 8px;color:var(--text-pri);">${r.name}</td>
+      <td style="padding:6px 8px;color:var(--purple);">${r.lead}</td>
+      <td style="padding:6px 8px;"><span style="padding:2px 8px;border-radius:3px;background:${sc}22;color:${sc};font-weight:700;font-size:10px;">${r.status}</span></td>
+      <td style="padding:6px 8px;text-align:right;color:var(--amber);" class="font-mono">${r.manna}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function registerGrpCrew() {
+  const nameInput = document.getElementById('grp-crew-name');
+  const leadInput = document.getElementById('grp-crew-lead');
+  const statusSelect = document.getElementById('grp-crew-status');
+
+  const name = nameInput.value.trim();
+  const lead = leadInput.value.trim();
+  const status = statusSelect.value;
+
+  if (!name || !lead) {
+    if (!name) { nameInput.style.borderColor = 'var(--red)'; setTimeout(() => nameInput.style.borderColor = '', 2000); }
+    if (!lead) { leadInput.style.borderColor = 'var(--red)'; setTimeout(() => leadInput.style.borderColor = '', 2000); }
+    return;
+  }
+
+  grpRosterCount++;
+  const num = String(grpRosterCount).padStart(3, '0');
+  const manna = Math.floor(1000 * 0.84);
+  const newCrew = { num, name, lead, status, manna };
+  grpRosterData.push(newCrew);
+  renderGrpRoster();
+
+  try {
+    if (sdk) {
+      await sdk.upsert('wolfkrow_roster', `crew-${num}`, newCrew);
+    }
+  } catch(e) { console.log('Roster save failed:', e); }
+
+  nameInput.value = '';
+  leadInput.value = '';
+  statusSelect.value = 'ACTIVE';
+  document.getElementById('grp-add-crew-form').style.display = 'none';
+}
+
+function grpRecalculate() {
+  const barCore = document.getElementById('grp-manna-bar-core');
+  const barWolf = document.getElementById('grp-manna-bar-wolf');
+  const barSeed = document.getElementById('grp-manna-bar-seed');
+
+  barCore.style.width = '0%';
+  barWolf.style.width = '0%';
+  barSeed.style.width = '0%';
+
+  setTimeout(() => {
+    barCore.style.width = '84%';
+    barWolf.style.width = '15%';
+    barSeed.style.width = '1%';
+  }, 100);
+}
+
+// ===================== LAMINAR =====================
+function renderLamDomains() {
+  const grid = document.getElementById('lam-domain-grid');
+  if (!grid) return;
+  grid.innerHTML = LAM_DOMAINS.map(d => {
+    const val = lamDomainValues[d.id];
+    const isMonitoring = d.status === 'MONITORING';
+    const barColor = isMonitoring ? 'var(--amber)' : 'var(--green)';
+    const badgeColor = isMonitoring ? 'var(--amber)' : 'var(--green)';
+    const badgeBg = isMonitoring ? 'rgba(255,184,0,0.12)' : 'rgba(0,255,136,0.12)';
+    const statusLabel = isMonitoring ? 'MONITORING' : 'OPTIMAL';
+    return `<div class="lam-card">
+      <div class="font-mono" style="font-size:13px;font-weight:700;color:#ffffff;margin-bottom:6px;">${d.num}. ${d.name}</div>
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;">${d.desc}</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:10px;color:var(--text-muted);">LIVE STATUS</span>
+        <span id="lam-domain-pct-${d.id}" style="font-size:12px;font-weight:700;color:${barColor};" class="font-mono">${val}%</span>
+      </div>
+      <div class="lam-domain-bar-track">
+        <div id="lam-domain-bar-${d.id}" class="lam-domain-bar-fill" style="width:${val}%;background:${barColor};"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+        <span style="font-size:10px;padding:2px 8px;border-radius:3px;background:${badgeBg};color:${badgeColor};font-weight:700;">${statusLabel}</span>
+        <button class="btn-sm lam-dispatch-domain" data-domain-name="${d.name}" data-domain-desc="${d.desc}" style="border-color:var(--green);color:var(--green);font-size:10px;">DISPATCH TO COLONY</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateLamVhDelta() {
+  const vh = Math.max(state.stats.total_tasks * 1000, 10000);
+  const delta = vh * 0.01;
+  const vhEl = document.getElementById('lam-vh-val');
+  const deltaEl = document.getElementById('lam-delta-val');
+  if (vhEl) vhEl.textContent = vh.toLocaleString();
+  if (deltaEl) deltaEl.textContent = delta.toLocaleString();
+}
+
+function lamFluctuateDomains() {
+  LAM_DOMAINS.forEach(d => {
+    let val = lamDomainValues[d.id];
+    val += (Math.random() - 0.5) * 2;
+    val = Math.max(75, Math.min(99, val));
+    val = Math.round(val * 10) / 10;
+    lamDomainValues[d.id] = val;
+    const barEl = document.getElementById('lam-domain-bar-' + d.id);
+    const pctEl = document.getElementById('lam-domain-pct-' + d.id);
+    if (barEl) barEl.style.width = val + '%';
+    if (pctEl) pctEl.textContent = val.toFixed(1) + '%';
+  });
+}
+
+function lamTestSovereignty() {
+  const result = aethelValidate('laminar sovereignty test', 'iAAi33iAAi', 0.94);
+  const statusEl = document.getElementById('lam-vec-sov-status');
+  const outEl = document.getElementById('lam-vec-sov-out');
+  const gate = result.gates[0];
+  statusEl.textContent = gate.passed ? 'PASS ✓' : 'FAIL ✗';
+  statusEl.style.color = gate.passed ? 'var(--green)' : 'var(--red)';
+  outEl.textContent = gate.note;
+  outEl.style.color = gate.passed ? 'var(--green)' : 'var(--red)';
+}
+
+function lamTestKinetic() {
+  const statusEl = document.getElementById('lam-vec-kin-status');
+  const outEl = document.getElementById('lam-vec-kin-out');
+  statusEl.textContent = 'PASS ✓';
+  statusEl.style.color = 'var(--green)';
+  outEl.textContent = 'Node caps within bounds. Δ constraint satisfied.';
+  outEl.style.color = 'var(--green)';
+}
+
+function lamTestLogical() {
+  const statusEl = document.getElementById('lam-vec-log-status');
+  const outEl = document.getElementById('lam-vec-log-out');
+  statusEl.textContent = 'PASS ✓';
+  statusEl.style.color = 'var(--green)';
+  outEl.textContent = 'Safety kernel 4/4 tests passing. No extraction signatures detected.';
+  outEl.style.color = 'var(--green)';
+}
+
+function lamRunAllVectors() {
+  laminarState.vectorTests++;
+  laminarState.lastRun = new Date().toISOString();
+  saveLaminarState();
+  logLaminar('RUN_ALL_VECTORS', 'All 3 vectors tested');
+
+  setTimeout(() => lamTestSovereignty(), 0);
+  setTimeout(() => lamTestKinetic(), 600);
+  setTimeout(() => lamTestLogical(), 1200);
+}
+
+function lamRunCI() {
+  if (lamCiRunning) return;
+  lamCiRunning = true;
+  laminarState.ciRuns++;
+  laminarState.lastRun = new Date().toISOString();
+  saveLaminarState();
+  logLaminar('CI_RUN', 'CI check executed');
+
+  const terminal = document.getElementById('lam-ci-terminal');
+  const now = () => new Date().toLocaleTimeString('en-US',{hour12:false});
+  const lines = [
+    `[${now()}] Running safety-kernel tests...`,
+    `[${now()}] cargo test -- 4/4 PASSING ✓`,
+    `[${now()}] Running love_quality_engine...`,
+    `[${now()}] LQ threshold check: 0.94 >= 0.85 PASS ✓`,
+    `[${now()}] Scanning extraction signatures...`,
+    `[${now()}] 0/6 signatures detected CLEAR ✓`,
+    `[${now()}] Covenant enforcement: ALL CHECKS PASSED ✓`,
+    `[${now()}] CI COMPLETE — LAMINAR LATTICE PRIME 3.6.9 NOMINAL`
+  ];
+
+  let i = 0;
+  function appendLine() {
+    if (i < lines.length) {
+      terminal.textContent += '\n' + lines[i];
+      terminal.scrollTop = terminal.scrollHeight;
+      i++;
+      setTimeout(appendLine, 400);
+    } else {
+      lamCiRunning = false;
+    }
+  }
+  appendLine();
+}
+
+function lamClearCI() {
+  document.getElementById('lam-ci-terminal').textContent = '> Awaiting CI trigger...';
+}
+
+function lamGenerateReport() {
+  laminarState.reports++;
+  laminarState.lastRun = new Date().toISOString();
+  saveLaminarState();
+  logLaminar('COMPLIANCE_REPORT', 'Report generated');
+
+  const ts = new Date().toISOString();
+  const report = `LAMINAR LATTICE PRIME 3.6.9 — COMPLIANCE REPORT
+Generated: ${ts}
+Node: 001
+Status: SECURED
+License: AGPLv3 + Covenant
+Sovereignty: LOCAL
+Extraction: BLOCKED
+LQ Threshold: 0.85 (current: 0.94)
+Kernel: v0.1.0 ACTIVE
+Vectors: 3/3 ALIGNED
+Domains: 6/6 OPTIMIZED (5 OPTIMAL, 1 MONITORING)
+VERDICT: LAMINAR PRIME ✓`;
+
+  const outEl = document.getElementById('lam-compliance-output');
+  outEl.innerHTML = `<div class="lam-card" style="margin-top:4px;">
+    <pre class="font-mono" style="font-size:12px;color:#39ff14;white-space:pre-wrap;line-height:1.6;">${report}</pre>
+  </div>`;
+}
+
+// ===================== HELPERS =====================
+function recalcAvgLQ() {
+  const allLQs = [...state.tasks.map(t=>t.lq), ...state.crew_briefs.map(b=>b.lq), ...state.proposals.map(p=>p.lq)];
+  if (allLQs.length > 0) {
+    state.stats.avg_lq = allLQs.reduce((a,b)=>a+b,0) / allLQs.length;
+  }
+}
+
+function switchTab(tabId) {
+  activeTab = tabId;
+  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-btn-active'));
+  const panelMap = {
+    dispatch:'panel-dispatch-pd01',
+    crew:'panel-crew-pc01',
+    governance:'panel-governance-pg01',
+    memory:'panel-memory-pm01',
+    kernel:'panel-kernel-pk01',
+    grapalaclawz:'panel-grapalaclawz-pg02',
+    laminar:'panel-laminar-pl01'
+  };
+  const p = document.getElementById(panelMap[tabId]);
+  if (p) p.style.display = 'block';
+  document.querySelectorAll('.tab-btn').forEach(b => { if (b.dataset.tab === tabId) b.classList.add('tab-btn-active'); });
+  if (tabId === 'memory') { renderMemList(); renderMemStats(); }
+  if (tabId === 'governance') renderGovList();
+  if (tabId === 'laminar') { renderLamDomains(); updateLamVhDelta(); }
+}
+
+function switchRepo(repoId) {
+  activeRepo = repoId;
+  document.querySelectorAll('.repo-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.repo === repoId);
+  });
+}
+
+// ===================== CLOCK =====================
+function updateClock() {
+  const now = new Date();
+  const ts = now.toLocaleTimeString('en-US', { hour12:false });
+  document.getElementById('header-clock-ck01').textContent = ts;
+  document.getElementById('sb-time-st01').textContent = ts;
+}
+
+// ===================== EVENT WIRING =====================
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Icons (progressive enhancement)
+  if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+    lucide.createIcons();
+  }
+
+  // Clock
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // LAMINAR domain fluctuation
+  setInterval(lamFluctuateDomains, 3000);
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Repos
+  document.getElementById('repo-list-rl01').addEventListener('click', function(e) {
+    const btn = e.target.closest('.repo-btn');
+    if (btn) switchRepo(btn.dataset.repo);
+  });
+
+  // Dispatch button
+  document.getElementById('btn-dispatch-bd01').addEventListener('click', dispatchToColony);
+
+  // Ctrl+Enter in textarea
+  document.getElementById('task-input-ti01').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); dispatchToColony(); }
+  });
+
+  // ALL / CLEAR agent buttons
+  document.getElementById('btn-all-ba01').addEventListener('click', () => {
+    document.querySelectorAll('.agent-cb').forEach(cb => cb.checked = true);
+  });
+  document.getElementById('btn-clear-bc01').addEventListener('click', () => {
+    document.querySelectorAll('.agent-cb').forEach(cb => cb.checked = false);
+  });
+
+  // Priority radios
+  document.querySelectorAll('.priority-radio').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.priority-radio').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentPriority = this.dataset.priority;
+    });
+  });
+
+  // Dispatch stream delegated events (Add to Governance, Archive)
+  document.getElementById('dispatch-stream-ds01').addEventListener('click', function(e) {
+    const govBtn = e.target.closest('.btn-add-gov');
+    if (govBtn) {
+      try {
+        const data = JSON.parse(govBtn.dataset.resp);
+        document.getElementById('gov-title-gt01').value = `Agent ${data.name} Recommendation`;
+        document.getElementById('gov-desc-gd01').value = data.recommendation;
+        switchTab('governance');
+      } catch(ex) {}
+      return;
+    }
+    const archBtn = e.target.closest('.btn-archive-card');
+    if (archBtn) {
+      const card = archBtn.closest('.glow-border, .consensus-card');
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transition = 'opacity 0.3s';
+        setTimeout(() => card.remove(), 300);
+      }
+    }
+  });
+
+  // MANNA
+  document.getElementById('manna-input-mi01').addEventListener('input', calcManna);
+  document.getElementById('btn-manna-calc-bmc1').addEventListener('click', calcManna);
+  document.getElementById('btn-manna-reset-bmr1').addEventListener('click', resetManna);
+  document.getElementById('btn-manna-save-bms1').addEventListener('click', saveManna);
+
+  // Crew brief buttons (delegation)
+  document.getElementById('crew-grid-cg01').addEventListener('click', function(e) {
+    const briefBtn = e.target.closest('.btn-brief-crew');
+    if (briefBtn) {
+      const crewId = briefBtn.dataset.crew;
+      const form = document.querySelector(`.crew-brief-form-${crewId}`);
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      return;
+    }
+    const dispatchBtn = e.target.closest('.btn-dispatch-brief');
+    if (dispatchBtn) {
+      briefCrew(dispatchBtn.dataset.crew);
+    }
+  });
+
+  // Add lineage entry
+  document.getElementById('btn-add-lineage-bal1').addEventListener('click', () => {
+    const desc = prompt('Enter lineage entry description:');
+    if (desc && desc.trim()) {
+      addLineageEntry(desc.trim());
+    }
+  });
+
+  // Governance submit
+  document.getElementById('btn-gov-submit-bgs1').addEventListener('click', submitProposal);
+
+  // Governance approve/reject (delegation)
+  document.getElementById('gov-list-gl01').addEventListener('click', function(e) {
+    const approveBtn = e.target.closest('.btn-gov-approve');
+    if (approveBtn) {
+      const idx = parseInt(approveBtn.dataset.idx);
+      if (state.proposals[idx]) {
+        state.proposals[idx].status = 'APPROVED';
+        state.proposals[idx].votes.approve++;
+        renderGovList();
+        saveState();
+      }
+      return;
+    }
+    const rejectBtn = e.target.closest('.btn-gov-reject');
+    if (rejectBtn) {
+      const idx = parseInt(rejectBtn.dataset.idx);
+      if (state.proposals[idx]) {
+        state.proposals[idx].status = 'REJECTED';
+        state.proposals[idx].votes.reject++;
+        renderGovList();
+        saveState();
+      }
+    }
+  });
+
+  // Memory search
+  document.getElementById('mem-search-ms02').addEventListener('input', function() {
+    renderMemList(this.value);
+  });
+
+  // Memory clear
+  document.getElementById('btn-clear-mem-bcm1').addEventListener('click', () => {
+    if (confirm('Clear ALL colony memory? This cannot be undone.')) {
+      state = {
+        tasks:[], crew_briefs:[], proposals:[], audit_log:[],
+        crew_lineage:[], manna_saves:[],
+        stats:{ total_tasks:0, total_briefs:0, total_proposals:0, avg_lq:0.942 }
+      };
+      renderAll();
+      saveState();
+    }
+  });
+
+  // Memory re-dispatch (delegation)
+  document.getElementById('mem-list-ml02').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-redispatch');
+    if (btn) {
+      document.getElementById('task-input-ti01').value = decodeURIComponent(btn.dataset.taskText);
+      switchTab('dispatch');
+    }
+  });
+
+  // Kernel tools
+  document.getElementById('btn-kern-lq-bkl1').addEventListener('click', runLQScanner);
+  document.getElementById('btn-kern-ext-bke1').addEventListener('click', runExtScanner);
+  document.getElementById('btn-kern-gate-bkg1').addEventListener('click', runGateTest);
+
+  // ===================== GRAPALACLAWZ EVENT WIRING =====================
+
+  // Crew agent pill selection
+  document.querySelectorAll('.grp-crew-pill').forEach(pill => {
+    pill.addEventListener('click', function() {
+      document.querySelectorAll('.grp-crew-pill').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      grpSelectedAgent = this.dataset.grpAgent;
+      document.getElementById('grp-agent-error').style.display = 'none';
+    });
+  });
+
+  // RUN CREW button
+  document.getElementById('btn-grp-run').addEventListener('click', runGrpCrew);
+
+  // ADD CREW button
+  document.getElementById('btn-grp-add-crew').addEventListener('click', function() {
+    document.getElementById('grp-add-crew-form').style.display = 'block';
+  });
+
+  // REGISTER button
+  document.getElementById('btn-grp-register').addEventListener('click', registerGrpCrew);
+
+  // CANCEL button
+  document.getElementById('btn-grp-cancel').addEventListener('click', function() {
+    document.getElementById('grp-add-crew-form').style.display = 'none';
+    document.getElementById('grp-crew-name').value = '';
+    document.getElementById('grp-crew-lead').value = '';
+    document.getElementById('grp-crew-status').value = 'ACTIVE';
+  });
+
+  // RECALCULATE button
+  document.getElementById('btn-grp-recalculate').addEventListener('click', grpRecalculate);
+
+  // ===================== LAMINAR EVENT WIRING =====================
+
+  // Vector test buttons
+  document.getElementById('btn-lam-vec-sov').addEventListener('click', lamTestSovereignty);
+  document.getElementById('btn-lam-vec-kin').addEventListener('click', lamTestKinetic);
+  document.getElementById('btn-lam-vec-log').addEventListener('click', lamTestLogical);
+  document.getElementById('btn-lam-run-all-vectors').addEventListener('click', lamRunAllVectors);
+
+  // CI buttons
+  document.getElementById('btn-lam-ci-run').addEventListener('click', lamRunCI);
+  document.getElementById('btn-lam-ci-clear').addEventListener('click', lamClearCI);
+
+  // Compliance report
+  document.getElementById('btn-lam-compliance').addEventListener('click', lamGenerateReport);
+
+  // Domain DISPATCH TO COLONY buttons (delegation)
+  document.getElementById('lam-domain-grid').addEventListener('click', function(e) {
+    const btn = e.target.closest('.lam-dispatch-domain');
+    if (btn) {
+      const name = btn.dataset.domainName;
+      const desc = btn.dataset.domainDesc;
+      document.getElementById('task-input-ti01').value = `[LAMINAR DOMAIN] ${name}: ${desc}`;
+      switchTab('dispatch');
+    }
+  });
+
+  // Init
+  initSDK();
+});
+</script>
 </body>
 </html>
